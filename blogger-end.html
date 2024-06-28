@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Form</title>
+</head>
+<body>
+    <form id="paymentForm">
+        <label for="productPrice">Product Price:</label>
+        <input type="number" id="productPrice" name="productPrice" required>
+        <br>
+        <button type="submit">Pay with bKash</button>
+    </form>
+
+    <script>
+        document.getElementById('paymentForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Get product price
+            let productPrice = parseFloat(document.getElementById('productPrice').value);
+
+            // Calculate total amount (you can add taxes, shipping costs, etc., here if needed)
+            let totalAmount = productPrice;
+
+            // Call your backend/API to initiate payment with totalAmount using bKash API
+            // Example:
+            // Replace below with actual AJAX call to your server handling bKash API integration
+            alert('Total Amount to be paid: ' + totalAmount); // Replace this with your actual API call
+
+            // For demonstration, alert the amount
+            // In real implementation, you'll integrate with bKash API to initiate the payment
+        });
+    </script>
+</body>
+</html>
