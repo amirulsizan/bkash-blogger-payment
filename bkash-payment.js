@@ -1,4 +1,4 @@
-function initiateBkashPayment() {
+function initiateBKashPayment() {
     // Example bKash Payment API URL
     var bkashApiUrl = "https://checkout.sandbox.bka.sh/v1.2.0-beta/checkout/payment/create";
 

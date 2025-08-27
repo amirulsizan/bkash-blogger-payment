@@ -1,6 +1,6 @@
 // bkash.js
 
-function initiateBkashPayment(amount, invoice) {
+function initiateBKashPayment(amount, invoice) {
   // Replace with your bKash API details
   const bkashEndpoint = "YOUR_BKASH_API_ENDPOINT";
   const bkashMerchantId = "YOUR_MERCHANT_ID";
