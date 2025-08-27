@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bKash Blogger Payment</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <h1>bKash Blogger Payment</h1>
+    <p>Simple integration of bKash payments for Blogger sites.</p>
+    <a class="btn" href="https://github.com/yourusername/bkash-payment-integration">View on GitHub</a>
+  </header>
+  <main>
+    <section class="features">
+      <h2>Features</h2>
+      <ul>
+        <li>Quick payment integration</li>
+        <li>Lightweight JavaScript</li>
+        <li>Easy to deploy on Blogger</li>
+      </ul>
+    </section>
+    <section class="demo">
+      <h2>Demo</h2>
+      <p>Click the button below to trigger the demo payment function.</p>
+      <button id="pay-button">Pay with bKash</button>
+      <script src="bkash-payment.js"></script>
+      <script>
+        document.getElementById('pay-button').addEventListener('click', () => {
+          if (typeof payWithBkash === 'function') {
+            payWithBkash();
+          } else {
+            alert('bkash-payment.js not loaded');
+          }
+        });
+      </script>
+    </section>
+  </main>
+  <footer class="footer">
+    <p>© 2024 bKash Blogger Payment</p>
+  </footer>
+</body>
+</html>
