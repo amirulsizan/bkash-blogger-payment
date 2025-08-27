@@ -49,4 +49,4 @@ Contributing
 Contributions are welcome! If you have suggestions, improvements, or bug fixes, please fork the repository and submit a pull request.
 
 ## License
-This project is licensed under the MIT License - see the LICENSE.txt file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
