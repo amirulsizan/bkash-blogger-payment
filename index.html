@@ -23,16 +23,31 @@
     </section>
     <section class="demo">
       <h2>Demo</h2>
-      <p>Click the button below to trigger the demo payment function.</p>
+      <p>Enter an amount and click the button to simulate a payment.</p>
+      <input type="number" id="amount" placeholder="Amount in BDT" />
       <button id="pay-button">Pay with bKash</button>
-      <script src="bkash-payment.js"></script>
+      <p id="status"></p>
+      <script src="bkash.js"></script>
       <script>
-        document.getElementById('pay-button').addEventListener('click', () => {
-          if (typeof payWithBkash === 'function') {
-            payWithBkash();
-          } else {
-            alert('bkash-payment.js not loaded');
+        const payBtn = document.getElementById('pay-button');
+        const amountInput = document.getElementById('amount');
+        const statusEl = document.getElementById('status');
+
+        payBtn.addEventListener('click', () => {
+          const amount = amountInput.value;
+          if (!amount) {
+            statusEl.textContent = 'Please enter an amount.';
+            return;
           }
+
+          statusEl.textContent = 'Processing payment...';
+          initiateBkashPayment(amount, 'INV' + Date.now())
+            .then(() => {
+              statusEl.textContent = 'Payment request sent.';
+            })
+            .catch(err => {
+              statusEl.textContent = 'Payment failed: ' + err.message;
+            });
         });
       </script>
     </section>
