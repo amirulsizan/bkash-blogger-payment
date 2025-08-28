@@ -56,8 +56,13 @@
   </main>
 
   <footer class="footer">
-    <p>© 2024 bKash Blogger Payment</p>
+    <p id="footerText"></p>
   </footer>
+  <script>
+    const year = new Date().getFullYear();
+    document.getElementById('footerText').innerHTML =
+      '© ' + year + ' bKash Blogger Payment | Brainchild of <a href="https://sizan.me" target="_blank" rel="noopener noreferrer">Amirul Sizan</a>';
+  </script>
 </body>
 </html>
 
