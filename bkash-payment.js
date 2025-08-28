@@ -36,11 +36,15 @@ async function initiateBkashPayment(
     if (data && data.bkashURL) {
       // Redirect the user to complete payment
       window.location.href = data.bkashURL;
-    } else {
-      console.error('Payment initiation failed', data);
+      return data;
     }
+
+    const error = new Error('Payment initiation failed');
+    console.error(error, data);
+    throw error;
   } catch (err) {
     console.error('Error initiating bKash payment:', err);
+    throw err;
   }
 }
 
