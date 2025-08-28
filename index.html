@@ -3,31 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bKash Blogger Payment</title>
+  <title>bKash Developer Hub</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="header">
-    <h1>bKash Blogger Payment</h1>
-    <p>Simple integration of bKash payments for Blogger sites.</p>
-    <a class="btn" href="https://github.com/yourusername/bkash-payment-integration">View on GitHub</a>
+  <nav class="nav">
+    <div class="nav-logo">bKash Developer</div>
+    <ul class="nav-links">
+      <li><a href="#">Docs</a></li>
+      <li><a href="#">API</a></li>
+      <li><a href="#">Support</a></li>
+    </ul>
+  </nav>
+  <header class="hero">
+    <h1>Build with bKash APIs</h1>
+    <p>Integrate bKash payments into your applications with ease.</p>
+    <a class="btn-primary" href="https://developer.bka.sh/">Get Started</a>
   </header>
   <main>
     <section class="features">
-      <h2>Features</h2>
-      <ul>
-        <li>Quick payment integration</li>
-        <li>Lightweight JavaScript</li>
-        <li>Easy to deploy on Blogger</li>
-      </ul>
+      <div class="feature-card">
+        <h3>REST APIs</h3>
+        <p>Secure endpoints for payment processing.</p>
+      </div>
+      <div class="feature-card">
+        <h3>SDKs</h3>
+        <p>Use our SDKs to speed up integration.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Developer Support</h3>
+        <p>Get help from our support team whenever you need.</p>
+      </div>
     </section>
     <section class="demo">
-      <h2>Demo</h2>
+      <h2>Payment Demo</h2>
       <p>Enter an amount and click the button to simulate a payment.</p>
       <input type="number" id="amount" placeholder="Amount in BDT" />
       <button id="pay-button">Pay with bKash</button>
       <p id="status"></p>
-      <script src="bkash.js"></script>
+      <script src="bkash-payment.js"></script>
       <script>
         const payBtn = document.getElementById('pay-button');
         const amountInput = document.getElementById('amount');
