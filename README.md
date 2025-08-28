@@ -34,6 +34,7 @@ Before you begin, make sure you have the following:
    git clone https://github.com/yourusername/bkash-payment-integration.git
    cd bkash-blogger-payment
    npm install
+
    ```
 
 3. **Configure the Payment Page:**
@@ -60,6 +61,22 @@ npm test
 
 This uses Node's built-in test runner and requires no additional setup.
 
+   Modify the provided HTML and JavaScript files to fit your specific product pricing and layout requirements.
+
+2. **Trigger the payment:**
+
+   Include `bkash-payment.js` and call `payWithBkash` from a button click. Replace the placeholder credentials in `bkash-payment.js` with your own sandbox or production credentials.
+
+   ```html
+   <button onclick="payWithBkash('100', 'INV123')">Pay with bKash</button>
+   ```
+
+   The script requests a sandbox token and redirects customers to bKash for approval.
+
+## Testing and Deployment
+
+Test the integration thoroughly in a development environment. Deploy the changes to your Blogger site after successful testing.
+
 ## Contributing
 
 Contributions are welcome! If you have suggestions, improvements, or bug fixes, please fork the repository and submit a pull request.
@@ -67,3 +84,5 @@ Contributions are welcome! If you have suggestions, improvements, or bug fixes, 
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+This project is licensed under the MIT License - see the LICENSE.txt file for details.
