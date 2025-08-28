@@ -12,26 +12,58 @@
       <span class="logo">bKash</span>
       <span class="title">Payment</span>
     </div>
+
     <div class="popup-details">
       <p><strong>Merchant :</strong> BDSHOP.COM</p>
       <p><strong>Invoice no :</strong> 21279615</p>
       <p><strong>Amount :</strong> BDT 5</p>
     </div>
-    <div class="popup-form">
-      <label for="bkash-number">Your bKash account number</label>
-      <input id="bkash-number" type="text" placeholder="e.g 01XXXXXXXXX" />
-      <div class="terms">
-        <input type="checkbox" id="agree" />
-        <label for="agree">I agree to the <a href="#">terms and conditions</a></label>
+
+    <!-- Step 1: Enter bKash number -->
+    <div class="popup-step step-1">
+      <div class="popup-form">
+        <label for="bkash-number">Your bKash account number</label>
+        <input id="bkash-number" type="text" placeholder="e.g 01XXXXXXXXX" />
+        <div class="terms">
+          <input type="checkbox" id="agree" />
+          <label for="agree">I agree to the <a href="#">terms and conditions</a></label>
+        </div>
+      </div>
+      <div class="popup-actions">
+        <button class="next" data-next="2">NEXT</button>
+        <button class="close">CLOSE</button>
       </div>
     </div>
-    <div class="popup-actions">
-      <button class="proceed">PROCEED</button>
-      <button class="close">CLOSE</button>
+
+    <!-- Step 2: Verification code -->
+    <div class="popup-step step-2 hidden">
+      <div class="popup-form">
+        <label for="verification-code">Verification Code</label>
+        <input id="verification-code" type="text" placeholder="Enter code" />
+      </div>
+      <div class="popup-actions">
+        <button class="next" data-next="3">NEXT</button>
+        <button class="close">CLOSE</button>
+      </div>
     </div>
+
+    <!-- Step 3: Confirm with PIN -->
+    <div class="popup-step step-3 hidden">
+      <div class="popup-form">
+        <label for="pin">Enter PIN</label>
+        <input id="pin" type="password" placeholder="****" />
+      </div>
+      <div class="popup-actions">
+        <button class="confirm">CONFIRM</button>
+        <button class="close">CLOSE</button>
+      </div>
+    </div>
+
     <div class="popup-footer">
       16247
     </div>
   </div>
-</body>
+
+  <script src="popup.js"></script>
+  </body>
 </html>
