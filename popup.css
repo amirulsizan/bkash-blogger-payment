@@ -1,0 +1,96 @@
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #f9f9f9;
+  font-family: Arial, sans-serif;
+}
+
+.bkash-popup {
+  background: #e2136e;
+  color: #fff;
+  width: 320px;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.popup-header {
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.popup-header .logo {
+  display: block;
+  font-size: 1.4em;
+}
+
+.popup-details p {
+  margin: 4px 0;
+  font-size: 0.9em;
+}
+
+.popup-form {
+  margin-top: 15px;
+}
+
+.popup-form label {
+  display: block;
+  font-size: 0.9em;
+  margin-bottom: 6px;
+}
+
+.popup-form input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.terms {
+  font-size: 0.8em;
+}
+
+.terms a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.popup-actions button {
+  flex: 1;
+  padding: 8px 0;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.popup-actions button.proceed {
+  background: #fff;
+  color: #e2136e;
+  margin-right: 10px;
+}
+
+.popup-actions button.close {
+  background: transparent;
+  color: #fff;
+  border: 1px solid #fff;
+}
+
+.popup-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.75em;
+}
