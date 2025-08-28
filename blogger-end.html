@@ -12,11 +12,15 @@
 
     <script>
         window.bkashCreds = { merchantNumber: 'YOUR_MERCHANT_ID' };
-    </script>
-    <script src="bkash-payment.js"></script>
-    <script src="blogger.js"></script>
-    <script>
-        bkashBlogger.initButton('bkash-pay', 'priceDetails');
+        document.getElementById('bkash-pay').addEventListener('click', function () {
+            const amount = document.getElementById('priceDetails').dataset.price;
+            const merchant =
+                (window.bkashCreds && window.bkashCreds.merchantNumber) ||
+                'YOUR_MERCHANT_ID';
+            const invoice = 'INV' + Date.now();
+            const url = `popup.html?amount=${encodeURIComponent(amount)}&merchant=${encodeURIComponent(merchant)}&invoice=${encodeURIComponent(invoice)}`;
+            window.open(url, 'bkashPopup', 'width=380,height=620');
+        });
     </script>
     <footer class="footer">
       <p id="footerText"></p>
