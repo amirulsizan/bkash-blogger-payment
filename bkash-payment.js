@@ -69,6 +69,18 @@ function initiateBKashPayment() {
         intent: "sale"
     };
 
+    // Make API Call
+    return fetch(bkashApiUrl, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + secretKey,
+            "X-App-Key": merchantId
+        },
+        body: JSON.stringify(paymentDetails)
+    })
+    .then(response => response.json())
+    .then(data => {
     try {
         const token = await getBkashToken();
 
@@ -172,5 +184,9 @@ async function payWithBkash(amount = '100', invoice = 'INV' + Date.now()) {
   }
 }
 
+// Export for testing purposes
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = initiateBkashPayment;
+}
 // Expose the function globally for inline event handlers or other scripts
 window.payWithBkash = payWithBkash;
