@@ -8,6 +8,7 @@ This project demonstrates how to integrate bKash payment method into a Blogger B
 - [Prerequisites](#prerequisites)
 - [Setup](#setup)
 - [Usage](#usage)
+- [Running Tests](#running-tests)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -31,22 +32,38 @@ Before you begin, make sure you have the following:
 2. **Clone the Repository**:
    ```bash
    git clone https://github.com/yourusername/bkash-payment-integration.git
+   cd bkash-blogger-payment
+   npm install
+   ```
 
 3. **Configure the Payment Page:**
-Edit your Blogger page HTML to include the payment form and JavaScript code provided in this repository.
+   Edit your Blogger page HTML to include the payment form and JavaScript code provided in this repository.
+
 ## Usage
+
 1. **Customize Payment Form:**
+   Modify the provided HTML and JavaScript files to fit your specific product pricing and layout requirements.
+2. **Integrate with bKash API:**
+   Use the provided JavaScript snippets to calculate the payment amount and initiate a payment request to bKash API.
 
-Modify the provided HTML and JavaScript files to fit your specific product pricing and layout requirements.
-Integrate with bKash API:
+## Testing and Deployment
 
-Use the provided JavaScript snippets to calculate the payment amount and initiate a payment request to bKash API.
-## Testing and Deployment:
+Test the integration thoroughly in a development environment. Deploy the changes to your Blogger site after successful testing.
 
-Test the integration thoroughly in a development environment.
-Deploy the changes to your Blogger site after successful testing.
-Contributing
+## Running Tests
+
+To run the automated tests for this project:
+
+```bash
+npm test
+```
+
+This uses Node's built-in test runner and requires no additional setup.
+
+## Contributing
+
 Contributions are welcome! If you have suggestions, improvements, or bug fixes, please fork the repository and submit a pull request.
 
 ## License
-This project is licensed under the MIT License - see the LICENSE.txt file for details.
+
+This project is licensed under the MIT License - see the LICENSE file for details.

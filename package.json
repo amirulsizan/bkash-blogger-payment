@@ -1,0 +1,16 @@
+{
+  "name": "bkash-blogger-payment",
+  "version": "1.0.0",
+  "description": "This project demonstrates how to integrate bKash payment method into a Blogger Blogspot payment page using JavaScript.",
+  "main": "bkash-payment.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs"
+}

@@ -15,7 +15,7 @@ function initiateBkashPayment() {
     };
 
     // Make API Call
-    fetch(bkashApiUrl, {
+    return fetch(bkashApiUrl, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -36,4 +36,9 @@ function initiateBkashPayment() {
     .catch(error => {
         console.error("Error:", error);
     });
+}
+
+// Export for testing purposes
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = initiateBkashPayment;
 }
