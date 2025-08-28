@@ -1,6 +1,6 @@
 const { test, describe, beforeEach, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
-const initiateBkashPayment = require('../bkash-payment.js');
+const initiateBkashPayment = require('../public/bkash-payment.js');
 
 describe('initiateBkashPayment', () => {
   let originalConsoleError;
