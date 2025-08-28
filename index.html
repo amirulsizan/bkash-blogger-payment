@@ -39,32 +39,18 @@
 
     <section class="demo">
       <h2>Payment Demo</h2>
-      <p>Enter an amount and click the button to simulate a payment.</p>
-      <input type="number" id="amount" placeholder="Amount in BDT" />
-      <button id="pay-button">Pay with bKash</button>
-      <p id="status"></p>
-      <script src="bkash-payment.js"></script>
+      <div class="product-card">
+        <h3>Demo Product</h3>
+        <p id="priceDetails" data-price="990">Price: 990 BDT</p>
+        <button id="bkash-pay" class="bkash-pay-button">Pay with bKash</button>
+      </div>
       <script>
-        const payBtn = document.getElementById('pay-button');
-        const amountInput = document.getElementById('amount');
-        const statusEl = document.getElementById('status');
-
-        payBtn.addEventListener('click', () => {
-          const amount = amountInput.value;
-          if (!amount) {
-            statusEl.textContent = 'Please enter an amount.';
-            return;
-          }
-
-          statusEl.textContent = 'Processing payment...';
-          initiateBkashPayment(amount, 'INV' + Date.now())
-            .then(() => {
-              statusEl.textContent = 'Payment request sent.';
-            })
-            .catch(err => {
-              statusEl.textContent = 'Payment failed: ' + err.message;
-            });
-        });
+        window.bkashCreds = { merchantNumber: 'YOUR_MERCHANT_ID' };
+      </script>
+      <script src="bkash-payment.js"></script>
+      <script src="blogger.js"></script>
+      <script>
+        bkashBlogger.initButton('bkash-pay', 'priceDetails');
       </script>
     </section>
   </main>

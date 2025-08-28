@@ -36,8 +36,15 @@
 
     function step3() {
       content.innerHTML = '<h3>Processing Payment...</h3>';
-      initiateBkashPayment(amount, 'INV' + Date.now(), merchant);
-      setTimeout(close, 1000);
+      initiateBkashPayment(amount, 'INV' + Date.now(), merchant)
+        .then(() => {
+          alert('Payment request sent.');
+          close();
+        })
+        .catch(err => {
+          alert('Payment failed: ' + err.message);
+          close();
+        });
     }
 
     function close() {
