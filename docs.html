@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bKash Blogger Docs</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-logo">bKash Blogger</div>
+    <ul class="nav-links">
+      <li><a href="docs.html">Docs</a></li>
+      <li><a href="setup.html">Setup</a></li>
+      <li><a href="index.html">Home</a></li>
+    </ul>
+  </nav>
+  <main class="content">
+    <h1>Documentation</h1>
+    <p>The <code>bkashBlogger</code> helper exposes a single function to wire up payments on Blogger pages.</p>
+    <pre><code>&lt;script src="bkash-payment.js"&gt;&lt;/script&gt;
+&lt;script src="blogger.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  bkashBlogger.initButton('payBtn', 'amount');
+&lt;/script&gt;</code></pre>
+    <p>Replace the placeholder credentials inside <code>bkash-payment.js</code> with your own bKash keys before going live.</p>
+  </main>
+  <footer class="footer">
+    <p>© 2024 bKash Blogger Payment</p>
+  </footer>
+</body>
+</html>
