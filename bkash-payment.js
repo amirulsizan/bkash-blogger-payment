@@ -1,7 +1,11 @@
 // Simplified bKash payment integration used for the demo and tests.
 // Replace the placeholder credentials with real values when deploying.
 
-async function initiateBkashPayment(amount = '100', invoice = 'INV123456') {
+async function initiateBkashPayment(
+  amount = '100',
+  invoice = 'INV123456',
+  merchantNumber
+) {
   const url = 'https://checkout.sandbox.bka.sh/v1.2.0-beta/checkout/payment/create';
 
   const payload = {
@@ -11,13 +15,18 @@ async function initiateBkashPayment(amount = '100', invoice = 'INV123456') {
     intent: 'sale',
   };
 
+  const merchant =
+    merchantNumber ||
+    (typeof bkashCreds !== 'undefined' && bkashCreds.merchantNumber) ||
+    'YOUR_MERCHANT_ID';
+
   try {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer YOUR_SECRET_KEY',
-        'X-App-Key': 'YOUR_MERCHANT_ID',
+        'X-App-Key': merchant,
       },
       body: JSON.stringify(payload),
     });
