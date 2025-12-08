@@ -51,17 +51,34 @@ Add the scripts to your Blogger theme for site-wide availability:
 
 ```
 bkash-blogger-payment/
-├── index.html              # Homepage with demo
-├── blogger-examples.html   # Ready-to-use Blogger code examples ⭐
-├── setup.html             # Detailed setup guide
-├── docs.html              # API documentation
-├── popup.html             # Payment popup interface
-├── popup.css              # Popup styling
-├── popup.js               # Popup interactions
-├── bkash-payment.js       # Main payment integration
-├── blogger.js             # Blogger helper functions
-├── styles.css             # Main styles
-└── BLOGGER_INTEGRATION.md # Comprehensive Blogger guide ⭐
+├── 🎨 Frontend Files
+│   ├── index.html              # Homepage with live demo
+│   ├── blogger-examples.html   # Ready-to-use code snippets ⭐
+│   ├── docs.html               # API documentation
+│   ├── setup.html              # Step-by-step setup guide
+│   └── styles.css              # Main stylesheet
+│
+├── 💳 Payment Integration
+│   ├── bkash-payment.js        # Core payment logic
+│   ├── blogger.js              # Blogger helper functions
+│   ├── popup.html              # Payment popup UI
+│   ├── popup.css               # Popup styling
+│   └── popup.js                # Popup interactions
+│
+├── 📚 Documentation
+│   ├── README.md               # This file
+│   ├── BLOGGER_INTEGRATION.md  # Complete Blogger guide ⭐
+│   └── LICENSE                 # MIT License
+│
+├── ⚙️  Configuration
+│   ├── package.json            # NPM configuration
+│   └── .gitignore              # Git ignore rules
+│
+├── 🖼️  Assets
+│   └── images/                 # Logo and graphics
+│
+└── 🧪 Tests
+    └── tests/                  # Automated tests
 ```
 
 ## 📖 Complete Documentation
