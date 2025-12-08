@@ -8,22 +8,107 @@
 </head>
 <body>
   <nav class="nav">
-    <div class="nav-logo">bKash Blogger</div>
+    <div class="nav-logo">
+      <span>💰</span> bKash Blogger
+    </div>
     <ul class="nav-links">
-      <li><a href="docs.html">Docs</a></li>
-      <li><a href="setup.html">Setup</a></li>
       <li><a href="index.html">Home</a></li>
+      <li><a href="blogger-examples.html">Blogger Examples</a></li>
+      <li><a href="docs.html" class="active">Documentation</a></li>
+      <li><a href="setup.html">Setup Guide</a></li>
+      <li><a href="https://github.com/amirulsizan/bkash-blogger-payment" target="_blank" class="github-link">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        GitHub
+      </a></li>
     </ul>
   </nav>
   <main class="content">
-    <h1>Documentation</h1>
-    <p>The <code>bkashBlogger</code> helper exposes a single function to wire up payments on Blogger pages.</p>
-    <pre><code>&lt;script src="bkash-payment.js"&gt;&lt;/script&gt;
+    <h1>📖 Documentation</h1>
+    
+    <h2>Overview</h2>
+    <p>The bKash Blogger integration provides a simple JavaScript-based solution for accepting bKash payments on your Blogger/Blogspot website. This solution works entirely on the client-side, making it perfect for static sites.</p>
+    
+    <h2>Core Components</h2>
+    
+    <h3>1. bkash-payment.js</h3>
+    <p>The main payment processing script that handles bKash API integration.</p>
+    <pre><code>&lt;script src="bkash-payment.js"&gt;&lt;/script&gt;</code></pre>
+    
+    <h3>2. blogger.js</h3>
+    <p>Helper functions specifically designed for Blogger integration.</p>
+    <pre><code>&lt;script src="blogger.js"&gt;&lt;/script&gt;</code></pre>
+    
+    <h2>API Reference</h2>
+    
+    <h3>bkashBlogger.initButton()</h3>
+    <p>Initializes a payment button with bKash integration.</p>
+    <pre><code>bkashBlogger.initButton(buttonId, amountInputId);</code></pre>
+    
+    <p><strong>Parameters:</strong></p>
+    <ul>
+      <li><code>buttonId</code> (string): The ID of the button element that triggers payment</li>
+      <li><code>amountInputId</code> (string): The ID of the input element containing the payment amount</li>
+    </ul>
+    
+    <h3>Example Usage</h3>
+    <pre><code>&lt;!-- Add input field for amount --&gt;
+&lt;input id="amount" type="number" placeholder="Enter amount" /&gt;
+
+&lt;!-- Add payment button --&gt;
+&lt;button id="payBtn"&gt;Pay with bKash&lt;/button&gt;
+
+&lt;!-- Include scripts --&gt;
+&lt;script src="bkash-payment.js"&gt;&lt;/script&gt;
 &lt;script src="blogger.js"&gt;&lt;/script&gt;
+
+&lt;!-- Initialize button --&gt;
 &lt;script&gt;
   bkashBlogger.initButton('payBtn', 'amount');
 &lt;/script&gt;</code></pre>
-    <p>Replace the placeholder credentials inside <code>bkash-payment.js</code> with your own bKash keys before going live.</p>
+    
+    <h2>Configuration</h2>
+    
+    <h3>Setting Up Credentials</h3>
+    <p>Before going live, you need to configure your bKash merchant credentials in <code>bkash-payment.js</code>:</p>
+    <pre><code>window.bkashCreds = {
+  merchantNumber: 'YOUR_MERCHANT_ID',
+  username: 'YOUR_USERNAME',
+  password: 'YOUR_PASSWORD',
+  appKey: 'YOUR_APP_KEY',
+  appSecret: 'YOUR_APP_SECRET'
+};</code></pre>
+    
+    <h3>Environment</h3>
+    <p>For testing, use sandbox credentials from bKash Developer Portal. For production, replace with live credentials.</p>
+    
+    <h2>Payment Flow</h2>
+    <ol>
+      <li>User enters amount and clicks payment button</li>
+      <li>Script generates a unique invoice ID</li>
+      <li>Opens bKash payment popup window</li>
+      <li>User completes payment on bKash platform</li>
+      <li>Popup closes and returns to your site</li>
+    </ol>
+    
+    <h2>Security Notes</h2>
+    <ul>
+      <li>All payment processing happens on bKash's secure servers</li>
+      <li>Never store sensitive card or payment information on your site</li>
+      <li>Always use HTTPS for production websites</li>
+      <li>Keep your API credentials secure and never commit them to public repositories</li>
+    </ul>
+    
+    <h2>Browser Support</h2>
+    <p>This solution works on all modern browsers including:</p>
+    <ul>
+      <li>Chrome (latest)</li>
+      <li>Firefox (latest)</li>
+      <li>Safari (latest)</li>
+      <li>Edge (latest)</li>
+      <li>Mobile browsers (iOS Safari, Chrome Mobile)</li>
+    </ul>
   </main>
   <footer class="footer">
     <p id="footerText"></p>

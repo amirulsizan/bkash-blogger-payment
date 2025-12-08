@@ -3,30 +3,239 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Blogger Setup</title>
+  <meta name="description" content="Step-by-step guide to integrate bKash payment into your Blogger website" />
+  <title>Setup Guide - bKash Blogger Integration</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <nav class="nav">
-    <div class="nav-logo">bKash Blogger</div>
+    <div class="nav-logo">
+      <span>💰</span> bKash Blogger
+    </div>
     <ul class="nav-links">
-      <li><a href="docs.html">Docs</a></li>
-      <li><a href="setup.html">Setup</a></li>
       <li><a href="index.html">Home</a></li>
+      <li><a href="blogger-examples.html">Blogger Examples</a></li>
+      <li><a href="docs.html">Documentation</a></li>
+      <li><a href="setup.html" class="active">Setup Guide</a></li>
+      <li><a href="https://github.com/amirulsizan/bkash-blogger-payment" target="_blank" class="github-link">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        GitHub
+      </a></li>
     </ul>
   </nav>
   <main class="content">
-    <h1>Setup on Blogger</h1>
+    <h1>🚀 Setup Guide</h1>
+    <p>Follow these simple steps to integrate bKash payments into your Blogger website.</p>
+    
+    <h2>Prerequisites</h2>
+    <ul>
+      <li>A bKash merchant account (Sign up at <a href="https://developer.bka.sh/" target="_blank">bKash Developer Portal</a>)</li>
+      <li>Access to your Blogger theme editor</li>
+      <li>Basic understanding of HTML</li>
+    </ul>
+    
+    <h2>Step 1: Get bKash Credentials</h2>
     <ol>
-      <li>Host <code>bkash-payment.js</code> and <code>blogger.js</code> or use the versions in this repository.</li>
-      <li>Open Blogger's theme editor and insert the following snippet where the button should appear:</li>
+      <li>Visit the <a href="https://developer.bka.sh/" target="_blank">bKash Developer Portal</a></li>
+      <li>Sign in or create a new account</li>
+      <li>Navigate to your dashboard and obtain:
+        <ul>
+          <li>Merchant Number</li>
+          <li>App Key</li>
+          <li>App Secret</li>
+          <li>Username</li>
+          <li>Password</li>
+        </ul>
+      </li>
+      <li>Start with sandbox credentials for testing</li>
     </ol>
-    <pre><code>&lt;input id="amount" type="number" placeholder="Amount"/&gt;
-&lt;button id="payBtn"&gt;Pay with bKash&lt;/button&gt;
-&lt;script src="/path/to/bkash-payment.js"&gt;&lt;/script&gt;
-&lt;script src="/path/to/blogger.js"&gt;&lt;/script&gt;
-&lt;script&gt;bkashBlogger.initButton('payBtn','amount');&lt;/script&gt;</code></pre>
-    <p>Replace the script paths with your own and update credentials inside <code>bkash-payment.js</code>.</p>
+    
+    <h2>Step 2: Download Files</h2>
+    <ol>
+      <li>Clone or download this repository from <a href="https://github.com/amirulsizan/bkash-blogger-payment" target="_blank">GitHub</a></li>
+      <li>You need these files:
+        <ul>
+          <li><code>bkash-payment.js</code> - Main payment script</li>
+          <li><code>blogger.js</code> - Blogger helper functions</li>
+          <li><code>popup.html</code> - Payment popup interface</li>
+          <li><code>popup.css</code> - Popup styling</li>
+        </ul>
+      </li>
+    </ol>
+    
+    <h2>Step 3: Host Files</h2>
+    <p>You have two options for hosting the files:</p>
+    
+    <h3>Option A: Use GitHub Pages (Recommended)</h3>
+    <ol>
+      <li>Fork this repository on GitHub</li>
+      <li>Enable GitHub Pages in repository settings</li>
+      <li>Your files will be available at: <code>https://yourusername.github.io/bkash-blogger-payment/</code></li>
+    </ol>
+    
+    <h3>Option B: Use a File Hosting Service</h3>
+    <ul>
+      <li>Upload files to any CDN or file hosting service</li>
+      <li>Services like jsDelivr, Cloudflare, or Google Drive work well</li>
+    </ul>
+    
+    <h2>Step 4: Configure Credentials</h2>
+    <p>Edit <code>bkash-payment.js</code> and update your credentials:</p>
+    <pre><code>window.bkashCreds = {
+  merchantNumber: 'YOUR_MERCHANT_ID',
+  username: 'YOUR_USERNAME',
+  password: 'YOUR_PASSWORD',
+  appKey: 'YOUR_APP_KEY',
+  appSecret: 'YOUR_APP_SECRET'
+};</code></pre>
+    <p><strong>⚠️ Warning:</strong> Never share or commit your production credentials to public repositories!</p>
+    
+    <h2>Step 5: Add to Blogger</h2>
+    <p>You have two options for Blogger integration:</p>
+    
+    <h3>Option A: Direct Post Integration (Recommended)</h3>
+    <ol>
+      <li>Go to your Blogger post editor</li>
+      <li>Click the <strong>HTML</strong> view button (⚙️ icon → HTML)</li>
+      <li>Paste this complete code where you want the payment button:</li>
+    </ol>
+    
+    <pre><code>&lt;!-- bKash Payment Button for Blogger --&gt;
+&lt;div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 30px; border-radius: 12px; text-align: center; max-width: 400px; margin: 20px auto;"&gt;
+  
+  &lt;div style="background: white; padding: 25px; border-radius: 12px;"&gt;
+    &lt;h3 style="color: #2c3e50; margin-bottom: 10px;"&gt;Your Product Name&lt;/h3&gt;
+    &lt;p id="product-price" data-price="500" style="font-size: 28px; color: #e2136e; font-weight: bold; margin: 15px 0;"&gt;৳500&lt;/p&gt;
+    &lt;button id="pay-now-btn" style="background: linear-gradient(135deg, #e2136e 0%, #c5115d 100%); color: white; border: none; padding: 14px 30px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%;"&gt;
+      Pay with bKash
+    &lt;/button&gt;
+  &lt;/div&gt;
+  
+&lt;/div&gt;
+
+&lt;script&gt;
+(function() {
+  const btn = document.getElementById('pay-now-btn');
+  const priceEl = document.getElementById('product-price');
+  
+  if (btn && priceEl) {
+    btn.addEventListener('click', function() {
+      const amount = priceEl.dataset.price;
+      const merchant = 'YOUR_MERCHANT_NUMBER'; // Replace with your merchant number
+      const invoice = 'INV-' + Date.now();
+      
+      // Replace with your GitHub Pages URL
+      const popupUrl = 'https://yourusername.github.io/bkash-blogger-payment/popup.html?amount=' + amount + '&merchant=' + merchant + '&invoice=' + invoice;
+      
+      const popup = window.open(popupUrl, 'bkashPayment', 'width=450,height=700,scrollbars=yes,resizable=yes');
+      
+      if (!popup) {
+        alert('Please allow popups for this site');
+      }
+    });
+  }
+})();
+&lt;/script&gt;</code></pre>
+
+    <p><strong>⚠️ Important:</strong> Replace these values:</p>
+    <ul>
+      <li><code>YOUR_MERCHANT_NUMBER</code> → Your bKash merchant number</li>
+      <li><code>https://yourusername.github.io/...</code> → Your GitHub Pages URL</li>
+      <li><code>500</code> → Your product price</li>
+      <li><code>Your Product Name</code> → Your actual product name</li>
+    </ul>
+    
+    <h3>Option B: Theme-Wide Integration</h3>
+    <ol>
+      <li>Go to your Blogger dashboard</li>
+      <li>Navigate to <strong>Theme → Edit HTML</strong></li>
+      <li>Find where you want to add the payment button (usually in a post or page)</li>
+      <li>Insert the following code:</li>
+    </ol>
+    <pre><code>&lt;!-- Payment Form --&gt;
+&lt;div class="bkash-payment-container"&gt;
+  &lt;label for="amount">Amount (BDT):&lt;/label&gt;
+  &lt;input id="amount" type="number" placeholder="Enter amount" min="1" /&gt;
+  
+  &lt;button id="payBtn" class="bkash-pay-button"&gt;
+    Pay with bKash
+  &lt;/button&gt;
+&lt;/div&gt;
+
+&lt;!-- Include Scripts --&gt;
+&lt;script src="https://yourusername.github.io/bkash-blogger-payment/bkash-payment.js"&gt;&lt;/script&gt;
+&lt;script src="https://yourusername.github.io/bkash-blogger-payment/blogger.js"&gt;&lt;/script&gt;
+
+&lt;!-- Initialize Payment Button --&gt;
+&lt;script&gt;
+  bkashBlogger.initButton('payBtn', 'amount');
+&lt;/script&gt;</code></pre>
+    <p><strong>Note:</strong> Replace <code>https://yourusername.github.io/...</code> with your actual hosted file URLs.</p>
+    
+    <h2>Step 6: Test the Integration</h2>
+    <ol>
+      <li>Save your changes and preview the page</li>
+      <li>Enter a test amount and click "Pay with bKash"</li>
+      <li>A popup should open with the bKash payment interface</li>
+      <li>Use sandbox credentials to test payments</li>
+      <li>Verify that payments are processed correctly</li>
+    </ol>
+    
+    <h2>Customization</h2>
+    <h3>Styling</h3>
+    <p>You can customize the button appearance with CSS:</p>
+    <pre><code>.bkash-pay-button {
+  background-color: #e2136e;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.bkash-pay-button:hover {
+  background-color: #c5115d;
+}</code></pre>
+    
+    <h2>Going Live</h2>
+    <ol>
+      <li>Replace sandbox credentials with production credentials</li>
+      <li>Test thoroughly with small amounts</li>
+      <li>Ensure your website uses HTTPS</li>
+      <li>Monitor transactions in your bKash merchant dashboard</li>
+    </ol>
+    
+    <h2>🔧 Troubleshooting</h2>
+    
+    <h3>Payment button not working?</h3>
+    <ul>
+      <li>Check browser console for JavaScript errors</li>
+      <li>Verify script URLs are correct and accessible</li>
+      <li>Ensure IDs match between HTML and JavaScript</li>
+    </ul>
+    
+    <h3>Popup blocked?</h3>
+    <ul>
+      <li>Ensure user interaction triggers the payment (button click)</li>
+      <li>Ask users to allow popups for your site</li>
+    </ul>
+    
+    <h3>Payment fails?</h3>
+    <ul>
+      <li>Verify credentials are correct</li>
+      <li>Check if using correct environment (sandbox vs production)</li>
+      <li>Review bKash API documentation for error codes</li>
+    </ul>
+    
+    <h2>Need Help?</h2>
+    <ul>
+      <li>Check the <a href="docs.html">Documentation</a></li>
+      <li>Open an issue on <a href="https://github.com/amirulsizan/bkash-blogger-payment/issues" target="_blank">GitHub</a></li>
+      <li>Review bKash's official <a href="https://developer.bka.sh/docs" target="_blank">API Documentation</a></li>
+    </ul>
   </main>
   <footer class="footer">
     <p id="footerText"></p>
