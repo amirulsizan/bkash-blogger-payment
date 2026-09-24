@@ -1,0 +1,9 @@
+{
+  "name": "bkash-blogger-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx wrangler dev",
+    "deploy": "npx wrangler deploy"
+  }
+}

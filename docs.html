@@ -3,116 +3,304 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bKash Blogger Docs</title>
+  <meta name="description" content="Reference for blogger.js, the checkout popup and the bKash Worker: attributes, events, endpoints and security model." />
+  <meta name="theme-color" content="#e2136e" />
+  <title>Reference · bKash for Blogger</title>
+  <link rel="icon" href="Images/bkash-logo-64.png" />
   <link rel="stylesheet" href="styles.css" />
+  <script src="site.js"></script>
 </head>
 <body>
-  <nav class="nav">
-    <div class="nav-logo">
-      <span>💰</span> bKash Blogger
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="nav" id="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="index.html"><img src="Images/bkash-logo-64.png" alt="" width="30" height="30" /><span>bKash <b>for Blogger</b></span></a>
+      <nav aria-label="Main">
+        <ul class="nav-links" id="navLinks">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="setup.html">Setup guide</a></li>
+          <li><a href="blogger-examples.html">Examples</a></li>
+          <li><a href="docs.html" aria-current="page">Reference</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="i icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+        <a class="icon-btn nav-github" href="https://github.com/amirulsizan/bkash-blogger-payment" aria-label="GitHub repository">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        </a>
+        <button class="icon-btn menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
     </div>
-    <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="blogger-examples.html">Blogger Examples</a></li>
-      <li><a href="docs.html" class="active">Documentation</a></li>
-      <li><a href="setup.html">Setup Guide</a></li>
-      <li><a href="https://github.com/amirulsizan/bkash-blogger-payment" target="_blank" class="github-link">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-        </svg>
-        GitHub
-      </a></li>
-    </ul>
-  </nav>
-  <main class="content">
-    <h1>📖 Documentation</h1>
-    
-    <h2>Overview</h2>
-    <p>The bKash Blogger integration provides a simple JavaScript-based solution for accepting bKash payments on your Blogger/Blogspot website. This solution works entirely on the client-side, making it perfect for static sites.</p>
-    
-    <h2>Core Components</h2>
-    
-    <h3>1. bkash-payment.js</h3>
-    <p>The main payment processing script that handles bKash API integration.</p>
-    <pre><code>&lt;script src="bkash-payment.js"&gt;&lt;/script&gt;</code></pre>
-    
-    <h3>2. blogger.js</h3>
-    <p>Helper functions specifically designed for Blogger integration.</p>
-    <pre><code>&lt;script src="blogger.js"&gt;&lt;/script&gt;</code></pre>
-    
-    <h2>API Reference</h2>
-    
-    <h3>bkashBlogger.initButton()</h3>
-    <p>Initializes a payment button with bKash integration.</p>
-    <pre><code>bkashBlogger.initButton(buttonId, amountInputId);</code></pre>
-    
-    <p><strong>Parameters:</strong></p>
-    <ul>
-      <li><code>buttonId</code> (string): The ID of the button element that triggers payment</li>
-      <li><code>amountInputId</code> (string): The ID of the input element containing the payment amount</li>
-    </ul>
-    
-    <h3>Example Usage</h3>
-    <pre><code>&lt;!-- Add input field for amount --&gt;
-&lt;input id="amount" type="number" placeholder="Enter amount" /&gt;
+  </header>
 
-&lt;!-- Add payment button --&gt;
-&lt;button id="payBtn"&gt;Pay with bKash&lt;/button&gt;
+  <main id="main">
+    <div class="page-head">
+      <div class="container">
+        <div class="breadcrumbs"><a href="index.html">Home</a> / Reference</div>
+        <h1>Reference</h1>
+        <p>Everything <code>blogger.js</code>, the checkout popup and the Worker accept and return. New here? Start with the <a href="setup.html">setup guide</a>.</p>
+      </div>
+    </div>
 
-&lt;!-- Include scripts --&gt;
-&lt;script src="bkash-payment.js"&gt;&lt;/script&gt;
-&lt;script src="blogger.js"&gt;&lt;/script&gt;
+    <div class="container docs">
+      <aside class="toc" aria-label="On this page">
+        <p class="toc-title">On this page</p>
+        <nav data-toc></nav>
+      </aside>
 
-&lt;!-- Initialize button --&gt;
-&lt;script&gt;
-  bkashBlogger.initButton('payBtn', 'amount');
-&lt;/script&gt;</code></pre>
-    
-    <h2>Configuration</h2>
-    
-    <h3>Setting Up Credentials</h3>
-    <p>Before going live, you need to configure your bKash merchant credentials in <code>bkash-payment.js</code>:</p>
-    <pre><code>window.bkashCreds = {
-  merchantNumber: 'YOUR_MERCHANT_ID',
-  username: 'YOUR_USERNAME',
-  password: 'YOUR_PASSWORD',
-  appKey: 'YOUR_APP_KEY',
-  appSecret: 'YOUR_APP_SECRET'
-};</code></pre>
-    
-    <h3>Environment</h3>
-    <p>For testing, use sandbox credentials from bKash Developer Portal. For production, replace with live credentials.</p>
-    
-    <h2>Payment Flow</h2>
-    <ol>
-      <li>User enters amount and clicks payment button</li>
-      <li>Script generates a unique invoice ID</li>
-      <li>Opens bKash payment popup window</li>
-      <li>User completes payment on bKash platform</li>
-      <li>Popup closes and returns to your site</li>
-    </ol>
-    
-    <h2>Security Notes</h2>
-    <ul>
-      <li>All payment processing happens on bKash's secure servers</li>
-      <li>Never store sensitive card or payment information on your site</li>
-      <li>Always use HTTPS for production websites</li>
-      <li>Keep your API credentials secure and never commit them to public repositories</li>
-    </ul>
-    
-    <h2>Browser Support</h2>
-    <p>This solution works on all modern browsers including:</p>
-    <ul>
-      <li>Chrome (latest)</li>
-      <li>Firefox (latest)</li>
-      <li>Safari (latest)</li>
-      <li>Edge (latest)</li>
-      <li>Mobile browsers (iOS Safari, Chrome Mobile)</li>
-    </ul>
+      <article class="prose">
+        <section>
+          <h2 id="architecture">Architecture</h2>
+          <p>A payment passes through four places. Only the Worker knows your bKash credentials, and only bKash's page ever sees the customer's PIN.</p>
+          <ol>
+            <li><strong>Your post</strong>: <code>blogger.js</code> opens <code>popup.html?amount=…&amp;invoice=…</code> in a popup window.</li>
+            <li><strong>Checkout popup</strong>: <code>POST {apiBase}/create</code> asks the Worker for a payment. The Worker gets a grant token, calls bKash's <code>create</code> API and returns a <code>bkashURL</code>.</li>
+            <li><strong>bKash</strong>: the popup navigates to <code>bkashURL</code>, where the customer enters their number, OTP and PIN.</li>
+            <li><strong>Callback</strong>: bKash redirects to <code>{worker}/callback</code>. The Worker calls <code>execute</code> (or <code>payment/status</code> if that fails) and redirects back to the popup with the result. The popup sends the result to your post with <code>postMessage</code>.</li>
+          </ol>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>File</th><th>Role</th></tr></thead>
+              <tbody>
+                <tr><td><code>blogger.js</code></td><td>Script for your blog. Turns elements into pay buttons, opens the popup, fires events.</td></tr>
+                <tr><td><code>popup.html</code>, <code>popup.css</code>, <code>popup.js</code></td><td>The checkout window: review, hand-off to bKash, result.</td></tr>
+                <tr><td><code>config.js</code></td><td>Your Worker URL and shop name. Empty <code>apiBase</code> means demo mode.</td></tr>
+                <tr><td><code>bkash-payment.js</code></td><td>Browser client for the Worker, used by the popup. Refuses to redirect anywhere but bKash.</td></tr>
+                <tr><td><code>worker/src/index.js</code></td><td>Cloudflare Worker: bKash Tokenized Checkout (grant, create, execute, status).</td></tr>
+                <tr><td><code>worker/wrangler.toml</code></td><td>Worker settings for the Wrangler CLI.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2 id="install">Installing blogger.js</h2>
+          <p>Load the script from your GitHub Pages fork, in a post, a gadget or the theme. Loading it more than once on a page is harmless.</p>
+<pre data-lang="html"><code>&lt;script src="https://YOUR-GITHUB-NAME.github.io/bkash-blogger-payment/blogger.js"&gt;&lt;/script&gt;</code></pre>
+          <p>Optional attributes on the script tag:</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Attribute</th><th>Default</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>data-popup</code></td><td><code>popup.html</code> next to the script</td><td>URL of the checkout popup.</td></tr>
+                <tr><td><code>data-api</code></td><td>none</td><td>Your Worker URL. Needed only for <code>bkashBlogger.verify()</code>.</td></tr>
+                <tr><td><code>data-toast</code></td><td><code>true</code></td><td>Set to <code>false</code> to hide the built-in result notices.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2 id="buttons">Button attributes</h2>
+          <p>Any element with <code>data-bkash-amount</code> or <code>data-bkash-amount-from</code> becomes a payment button, including elements added after the page loads.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Attribute</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>data-bkash-amount</code></td><td>Price in BDT, such as <code>500</code> or <code>99.50</code>. <code>1,500</code>, <code>৳ 990</code>, <code>Tk. 500</code> and Bangla digits (<code>৫০০</code>) also work.</td></tr>
+                <tr><td><code>data-bkash-amount-from</code></td><td>ID of an input, select or element holding the amount, for customer-chosen amounts. The input's <code>min</code> is respected.</td></tr>
+                <tr><td><code>data-bkash-product</code></td><td>Product name shown in the checkout and sent to the Worker. Must match <code>PRICES</code> if you use it.</td></tr>
+                <tr><td><code>data-bkash-success-url</code></td><td>Page to open after a successful payment, such as a thank-you page.</td></tr>
+                <tr><td><code>data-bkash-paid-text</code></td><td>Button text after success. Default: <code>Paid ✓</code>.</td></tr>
+                <tr><td><code>data-bkash-invoice-prefix</code></td><td>Prefix for generated invoice numbers. Default: <code>INV</code>.</td></tr>
+                <tr><td><code>data-bkash-style="none"</code></td><td>Keep your own button styling instead of the built-in bKash look.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2 id="javascript">JavaScript API</h2>
+          <h3><code>bkashBlogger.pay(options)</code></h3>
+          <p>Opens the checkout. Returns a promise that resolves when the checkout ends, either with a success or when the window closes. It resolves with the last result (see <a href="#events">event detail</a>).</p>
+<pre data-lang="js"><code>bkashBlogger.pay({
+  amount: 500,                 // required
+  product: 'Premium eBook',    // optional
+  invoice: 'ORDER-1042',       // optional, generated if missing
+  onSuccess: function (detail) { console.log(detail.trxID); },
+  onFailure: function (detail) { console.log(detail.message); },
+  onCancel: function (detail) {},
+  onClose: function (detail) {},
+}).then(function (result) {
+  if (result.status === 'success') {
+    // show the download link
+  }
+});</code></pre>
+          <h3><code>bkashBlogger.initButton(buttonId, amountInputId, options)</code></h3>
+          <p>Wires an existing button by ID. <code>amountInputId</code> is optional; <code>options</code> takes the same callbacks as <code>pay()</code>. Kept for snippets written for version 1.</p>
+          <h3><code>bkashBlogger.verify(paymentID)</code></h3>
+          <p>Asks your Worker for the authoritative status from bKash. Requires <code>data-api</code> on the script tag. Resolves with <code>{ verified, transactionStatus, trxID, amount, invoice }</code>.</p>
+          <h3><code>bkashBlogger.configure(options)</code></h3>
+          <p>Changes <code>popupUrl</code>, <code>apiBase</code> or <code>toast</code> at runtime.</p>
+        </section>
+
+        <section>
+          <h2 id="events">Events</h2>
+          <p>Events bubble from the button that started the payment, or fire on <code>document</code> if there isn't one.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Event</th><th>When</th></tr></thead>
+              <tbody>
+                <tr><td><code>bkash:success</code></td><td>bKash completed the payment.</td></tr>
+                <tr><td><code>bkash:failure</code></td><td>bKash refused or couldn't complete the payment. The customer may still retry.</td></tr>
+                <tr><td><code>bkash:cancel</code></td><td>The customer cancelled on bKash's page or in the checkout.</td></tr>
+                <tr><td><code>bkash:result</code></td><td>After any of the three above.</td></tr>
+                <tr><td><code>bkash:close</code></td><td>The checkout window closed.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><code>event.detail</code> contains:</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>status</code></td><td><code>success</code>, <code>failure</code>, <code>cancel</code> or <code>closed</code></td></tr>
+                <tr><td><code>trxID</code></td><td>bKash transaction ID (success only)</td></tr>
+                <tr><td><code>paymentID</code></td><td>bKash payment ID, usable with <code>verify()</code></td></tr>
+                <tr><td><code>invoice</code>, <code>amount</code>, <code>product</code></td><td>What was paid for</td></tr>
+                <tr><td><code>message</code></td><td>Reason for a failure, if bKash gave one</td></tr>
+                <tr><td><code>demo</code></td><td><code>true</code> when the checkout ran in demo mode</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2 id="popup">Checkout popup</h2>
+          <h3><code>config.js</code></h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Setting</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>apiBase</code></td><td>Your Worker URL. Leave empty for demo mode.</td></tr>
+                <tr><td><code>merchantName</code></td><td>Shown to customers as the payee.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>URL parameters</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Parameter</th><th>Set by</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>amount</code></td><td>blogger.js / Worker</td><td>Amount in BDT. Required to start.</td></tr>
+                <tr><td><code>invoice</code></td><td>blogger.js / Worker</td><td>Merchant invoice number.</td></tr>
+                <tr><td><code>product</code></td><td>blogger.js</td><td>Product name to display.</td></tr>
+                <tr><td><code>origin</code></td><td>blogger.js</td><td>Your blog's origin; the only place the result is posted to.</td></tr>
+                <tr><td><code>return</code></td><td>blogger.js</td><td>Page to go back to when the checkout ran in the same tab.</td></tr>
+                <tr><td><code>status</code></td><td>Worker</td><td><code>success</code>, <code>failure</code> or <code>cancel</code>. Switches the popup to the result screen.</td></tr>
+                <tr><td><code>paymentID</code>, <code>trxID</code>, <code>message</code></td><td>Worker</td><td>Result details from bKash.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>When the popup is blocked, the checkout runs in the same tab and sends the customer back to <code>return</code> with <code>bkash_status</code>, <code>bkash_trx</code>, <code>bkash_invoice</code>, <code>bkash_amount</code> and <code>bkash_payment</code>. <code>blogger.js</code> reads them, fires the usual events and removes them from the address bar.</p>
+        </section>
+
+        <section>
+          <h2 id="worker">Worker API</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Endpoint</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>GET /</code></td><td>Health check: <code>{ ok, mode, configured, missing }</code>.</td></tr>
+                <tr><td><code>POST /create</code></td><td>Body <code>{ amount, invoice?, product? }</code>. Returns <code>{ paymentID, bkashURL, amount, invoice }</code>.</td></tr>
+                <tr><td><code>GET /callback</code></td><td>bKash redirects here with <code>paymentID</code> and <code>status</code>. Executes the payment and redirects to <code>POPUP_URL</code>.</td></tr>
+                <tr><td><code>GET /verify?paymentID=</code></td><td>Returns <code>{ verified, transactionStatus, trxID, amount, currency, invoice }</code> straight from bKash.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>Environment variables</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Name</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>BKASH_USERNAME</code>, <code>BKASH_PASSWORD</code>, <code>BKASH_APP_KEY</code>, <code>BKASH_APP_SECRET</code></td><td><strong>Secrets.</strong> Your Tokenized Checkout credentials.</td></tr>
+                <tr><td><code>POPUP_URL</code></td><td>Full URL of <code>popup.html</code> on your GitHub Pages.</td></tr>
+                <tr><td><code>BKASH_MODE</code></td><td><code>sandbox</code> (default) or <code>live</code>.</td></tr>
+                <tr><td><code>ALLOWED_ORIGINS</code></td><td>Comma-separated sites allowed to call the Worker from a browser. Defaults to the origin of <code>POPUP_URL</code>. Add your blog if you use <code>verify()</code> there.</td></tr>
+                <tr><td><code>PRICES</code></td><td>JSON such as <code>{"Premium eBook": 500, "Donation": "any"}</code>. When set, only these products can be paid, at these prices.</td></tr>
+                <tr><td><code>MAX_AMOUNT</code></td><td>Reject payments above this many taka.</td></tr>
+                <tr><td><code>BKASH_BASE_URL</code></td><td>Override the bKash API URL (rarely needed).</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>Errors</h3>
+          <p>Errors come back as <code>{ "error": { "code", "message" } }</code>, and the popup shows the message to the customer.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Code</th><th>HTTP</th><th>Meaning</th></tr></thead>
+              <tbody>
+                <tr><td><code>invalid_amount</code></td><td>400</td><td>Not a positive number with at most two decimals.</td></tr>
+                <tr><td><code>unknown_product</code>, <code>price_mismatch</code></td><td>400</td><td>Rejected by <code>PRICES</code>.</td></tr>
+                <tr><td><code>amount_too_large</code></td><td>400</td><td>Above <code>MAX_AMOUNT</code>.</td></tr>
+                <tr><td><code>origin_not_allowed</code></td><td>403</td><td>The calling site isn't in <code>ALLOWED_ORIGINS</code>.</td></tr>
+                <tr><td><code>not_configured</code></td><td>500</td><td>A secret or <code>POPUP_URL</code> is missing.</td></tr>
+                <tr><td><code>bkash_error</code></td><td>502</td><td>bKash refused the request; <code>message</code> and <code>bkashCode</code> say why.</td></tr>
+                <tr><td><code>bkash_unreachable</code></td><td>502</td><td>bKash didn't answer within 30 seconds.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2 id="security">Security model</h2>
+          <ul>
+            <li><strong>Customer secrets stay with bKash.</strong> The checkout never asks for a number, OTP or PIN; bKash's own page does.</li>
+            <li><strong>Merchant secrets stay on the Worker.</strong> Nothing in your fork or on Blogger is secret.</li>
+            <li><strong>Redirects are pinned to bKash.</strong> The popup only navigates to <code>https://</code> hosts under <code>bkash.com</code> or <code>bka.sh</code>.</li>
+            <li><strong>The popup only answers your blog.</strong> Results are posted to the <code>origin</code> that opened it, and <code>blogger.js</code> only accepts messages from the popup's origin.</li>
+            <li><strong>The popup can't be framed</strong> and ships a strict Content Security Policy.</li>
+            <li><strong>Prices can be enforced</strong> on the server with <code>PRICES</code>.</li>
+          </ul>
+          <div class="callout callout-warn">
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5L2.5 20h19L12 3.5z"/><path d="M12 10v4M12 17v.01"/></svg>
+            <div><p><strong>Blogger has no server, so a determined visitor can fake a success event in their own browser.</strong> Use events to improve the experience, and confirm the transaction ID in your merchant portal or with <code>/verify</code> before you deliver anything valuable.</p></div>
+          </div>
+        </section>
+
+        <section>
+          <h2 id="browsers">Browser support</h2>
+          <p>Current Chrome, Edge, Firefox and Safari on desktop and mobile. In-app browsers that block popups, like Facebook's, fall back to checkout in the same tab and return to your post afterwards.</p>
+        </section>
+      </article>
+    </div>
   </main>
+
   <footer class="footer">
-    <p id="footerText"></p>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="index.html"><img src="Images/bkash-logo-64.png" alt="" width="30" height="30" /><span>bKash <b>for Blogger</b></span></a>
+          <p>Open-source bKash checkout for Blogger and other static sites. An independent project, not affiliated with bKash Limited.</p>
+        </div>
+        <div>
+          <h4>Guide</h4>
+          <ul>
+            <li><a href="setup.html">Setup guide</a></li>
+            <li><a href="blogger-examples.html">Examples &amp; snippet builder</a></li>
+            <li><a href="docs.html">Reference</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="https://github.com/amirulsizan/bkash-blogger-payment">GitHub repository</a></li>
+            <li><a href="https://github.com/amirulsizan/bkash-blogger-payment/issues">Report an issue</a></li>
+            <li><a href="https://developer.bka.sh/">bKash developer portal</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p id="footerText">© bKash Blogger Payment</p>
+        <p>MIT licensed</p>
+      </div>
+    </div>
   </footer>
-  <script src="footer.js"></script>
+
 </body>
 </html>

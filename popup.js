@@ -1,257 +1,441 @@
-// Enhanced popup interactions with validation and smooth UX
+// Checkout popup: review -> pay on bKash's own page -> result.
+//
+// Started by blogger.js with ?amount=&invoice=&product=&origin=&return=
+// The Worker sends the customer back with ?status=&paymentID=&trxID=...
+// Without an apiBase in config.js the popup runs in demo mode and simulates bKash.
+(function () {
+  'use strict';
 
-// Parse URL parameters
-const params = new URLSearchParams(window.location.search);
-const amount = params.get('amount') || '0';
-const merchant = params.get('merchant') || 'Demo Merchant';
-const invoice = params.get('invoice') || 'INV' + Date.now();
+  var STORAGE_KEY = 'bkb:checkout';
+  var STATUSES = ['success', 'failure', 'cancel'];
 
-// Populate payment details
-const amountEl = document.getElementById('amount');
-if (amountEl) amountEl.textContent = amount;
-const merchantEl = document.getElementById('merchantName');
-if (merchantEl) merchantEl.textContent = merchant;
-const invoiceEl = document.getElementById('invoiceNo');
-if (invoiceEl) invoiceEl.textContent = invoice;
+  var config = window.BKASH_CONFIG || {};
+  var payment = window.bkashPayment;
+  var params = new URLSearchParams(window.location.search);
+  var demo = !config.apiBase;
 
-// Current step tracking
-let currentStep = 1;
-
-// Validation functions
-function validateBkashNumber(number) {
-  const regex = /^01[0-9]{9}$/;
-  return regex.test(number);
-}
-
-function validateVerificationCode(code) {
-  const regex = /^[0-9]{6}$/;
-  return regex.test(code);
-}
-
-function validatePIN(pin) {
-  const regex = /^[0-9]{4}$/;
-  return regex.test(pin);
-}
-
-// Show error on input
-function showError(inputId, errorId) {
-  const input = document.getElementById(inputId);
-  const error = document.getElementById(errorId);
-  if (input) {
-    input.classList.add('error');
-    if (error) error.style.display = 'block';
+  function $(id) {
+    return document.getElementById(id);
   }
-}
 
-// Clear error on input
-function clearError(inputId, errorId) {
-  const input = document.getElementById(inputId);
-  const error = document.getElementById(errorId);
-  if (input) {
-    input.classList.remove('error');
-    if (error) error.style.display = 'none';
+  // A checkout must never run inside someone else's frame (clickjacking).
+  if (window.top !== window.self) {
+    document.body.textContent = 'Please open this checkout in its own window.';
+    return;
   }
-}
 
-// Update progress indicator
-function updateProgress(step) {
-  document.querySelectorAll('.progress-step').forEach((el, index) => {
-    const stepNum = index + 1;
-    if (stepNum < step) {
-      el.classList.add('completed');
-      el.classList.remove('active');
-    } else if (stepNum === step) {
-      el.classList.add('active');
-      el.classList.remove('completed');
+  // -------------------------------------------------------------------------
+  // Input cleaning: every value below comes from the URL.
+
+  function cleanText(value, max) {
+    return String(value || '')
+      .replace(/[\u0000-\u001f\u007f]/g, '')
+      .trim()
+      .slice(0, max || 100);
+  }
+
+  function cleanInvoice(value) {
+    return String(value || '').replace(/[^A-Za-z0-9._-]/g, '').slice(0, 50);
+  }
+
+  function cleanOrigin(value) {
+    try {
+      var url = new URL(value);
+      return /^https?:$/.test(url.protocol) && url.origin === value ? value : '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function cleanUrl(value) {
+    try {
+      var url = new URL(value);
+      return /^https?:$/.test(url.protocol) ? url.toString() : '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function createInvoice() {
+    return 'INV-' + Date.now().toString(36).toUpperCase() +
+      Math.random().toString(36).slice(2, 6).toUpperCase();
+  }
+
+  function formatAmount(amount) {
+    var number = Number(amount);
+    try {
+      return number.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    } catch (e) {
+      return number.toFixed(2);
+    }
+  }
+
+  function readSaved() {
+    try {
+      return JSON.parse(sessionStorage.getItem(STORAGE_KEY) || 'null') || {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function save(extra) {
+    try {
+      var data = {
+        amount: ctx.amount,
+        invoice: ctx.invoice,
+        product: ctx.product,
+        origin: ctx.origin,
+        returnUrl: ctx.returnUrl,
+      };
+      Object.keys(extra || {}).forEach(function (key) {
+        data[key] = extra[key];
+      });
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      // Private mode: the result still shows, it just can't reach the opener.
+    }
+  }
+
+  var status = params.get('status');
+  var isResult = status !== null;
+  // After bKash, the Worker only knows the payment. The rest was saved before
+  // leaving; ignore it if it belongs to another checkout.
+  var saved = readSaved();
+  if (isResult && params.get('invoice') && saved.invoice && saved.invoice !== params.get('invoice')) {
+    saved = {};
+  }
+  if (!isResult) saved = {};
+
+  var ctx = {
+    merchant: cleanText(config.merchantName, 60) || 'Merchant',
+    amount: payment.normalizeAmount(params.get('amount') || saved.amount),
+    invoice: cleanInvoice(params.get('invoice') || saved.invoice) || createInvoice(),
+    product: cleanText(params.get('product') || saved.product),
+    origin: cleanOrigin(params.get('origin') || saved.origin),
+    returnUrl: cleanUrl(params.get('return') || saved.returnUrl),
+  };
+
+  // -------------------------------------------------------------------------
+  // Rendering
+
+  function announce(text) {
+    $('liveRegion').textContent = text;
+  }
+
+  function showView(name) {
+    ['review', 'processing', 'result', 'invalid'].forEach(function (view) {
+      $('view-' + view).hidden = view !== name;
+    });
+    var heading = $('view-' + name).querySelector('.co-title');
+    if (heading && name !== 'review') heading.focus({ preventScroll: true });
+  }
+
+  function setStep(active, failed) {
+    Array.prototype.forEach.call(document.querySelectorAll('.co-step'), function (step) {
+      var n = Number(step.getAttribute('data-step'));
+      var error = Boolean(failed) && n === active;
+      var done = n < active || (n === active && active === 3 && !failed);
+      step.classList.toggle('is-done', done);
+      step.classList.toggle('is-active', n === active && !done && !error);
+      step.classList.toggle('is-error', error);
+      if (n === active) step.setAttribute('aria-current', 'step');
+      else step.removeAttribute('aria-current');
+    });
+  }
+
+  function renderSummary() {
+    $('merchantName').textContent = ctx.merchant;
+    $('merchantNote').textContent = ctx.merchant;
+    $('merchantInitial').textContent = ctx.merchant.charAt(0).toUpperCase();
+    $('demoBadge').hidden = !demo;
+    $('demoSimulator').hidden = !demo;
+    $('invoiceValue').textContent = ctx.invoice;
+
+    if (ctx.product) {
+      $('productName').textContent = ctx.product;
+      $('productName').hidden = false;
+    }
+    if (ctx.amount) {
+      var amount = formatAmount(ctx.amount);
+      $('amountValue').textContent = amount;
+      $('payLabel').textContent = 'Pay ৳' + amount;
+      document.title = 'Pay ৳' + amount + ' · ' + ctx.merchant;
     } else {
-      el.classList.remove('active', 'completed');
+      $('amountValue').textContent = '—';
     }
-  });
-}
-
-// Navigate to step
-function goToStep(step) {
-  document.querySelectorAll('.popup-step').forEach(el => {
-    el.classList.remove('active');
-  });
-  
-  const targetStep = document.querySelector('.step-' + step);
-  if (targetStep) {
-    targetStep.classList.add('active');
-    currentStep = step;
-    updateProgress(step);
   }
-}
 
-// Step 1: Account Number Validation
-const bkashNumberInput = document.getElementById('bkash-number');
-const agreeCheckbox = document.getElementById('agree');
-const step1NextBtn = document.querySelector('.step-1 .next-btn');
+  function showError(message) {
+    $('reviewErrorText').textContent = message;
+    $('reviewError').hidden = false;
+  }
 
-if (bkashNumberInput) {
-  bkashNumberInput.addEventListener('input', () => {
-    clearError('bkash-number', 'number-error');
-  });
-}
+  // -------------------------------------------------------------------------
+  // Step 1 -> 2
 
-if (step1NextBtn) {
-  step1NextBtn.addEventListener('click', () => {
-    const number = bkashNumberInput?.value || '';
-    const agreed = agreeCheckbox?.checked || false;
-    
-    let isValid = true;
-    
-    if (!validateBkashNumber(number)) {
-      showError('bkash-number', 'number-error');
-      isValid = false;
-    }
-    
-    if (!agreed) {
-      alert('Please agree to the terms and conditions');
-      isValid = false;
-    }
-    
-    if (isValid) {
-      goToStep(2);
-    }
-  });
-}
+  function startPayment() {
+    $('reviewError').hidden = true;
+    save();
+    setStep(2);
+    showView('processing');
+    announce('Connecting to bKash');
 
-// Step 2: Verification Code
-const verificationCodeInput = document.getElementById('verification-code');
-const step2NextBtn = document.querySelector('.step-2 .next-btn');
-const resendBtn = document.getElementById('resend-code');
-
-if (verificationCodeInput) {
-  verificationCodeInput.addEventListener('input', () => {
-    clearError('verification-code', 'code-error');
-  });
-}
-
-if (step2NextBtn) {
-  step2NextBtn.addEventListener('click', () => {
-    const code = verificationCodeInput?.value || '';
-    
-    if (!validateVerificationCode(code)) {
-      showError('verification-code', 'code-error');
+    if (demo) {
+      runDemo();
       return;
     }
-    
-    goToStep(3);
-  });
-}
 
-// Resend code functionality
-if (resendBtn) {
-  let resendCooldown = false;
-  resendBtn.addEventListener('click', () => {
-    if (resendCooldown) return;
-    
-    resendCooldown = true;
-    resendBtn.disabled = true;
-    resendBtn.textContent = 'Code sent!';
-    
-    setTimeout(() => {
-      resendBtn.disabled = false;
-      resendBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg> Resend Code';
-      resendCooldown = false;
-    }, 3000);
-  });
-}
+    payment
+      .initiate(ctx.amount, ctx.invoice, { product: ctx.product })
+      .then(function (data) {
+        save({ paymentID: data.paymentID });
+        $('processingTitle').textContent = 'Opening bKash…';
+      })
+      .catch(function (err) {
+        setStep(1);
+        showView('review');
+        showError("Couldn't start the payment. " + (err && err.message ? err.message : ''));
+        $('payBtn').focus();
+      });
+  }
 
-// Step 3: PIN Confirmation
-const pinInput = document.getElementById('pin');
-const confirmBtn = document.getElementById('confirm-payment');
-const loadingOverlay = document.getElementById('loading-overlay');
+  function runDemo() {
+    var checked = document.querySelector('input[name="outcome"]:checked');
+    var outcome = checked ? checked.value : 'success';
+    var id = Math.random().toString(36).slice(2, 10).toUpperCase();
 
-if (pinInput) {
-  pinInput.addEventListener('input', () => {
-    clearError('pin', 'pin-error');
-  });
-}
+    setTimeout(function () {
+      $('processingTitle').textContent = 'Waiting for bKash…';
+      $('processingText').textContent =
+        'Demo: this is where bKash asks for the customer’s number, OTP and PIN.';
+    }, 900);
 
-if (confirmBtn) {
-  confirmBtn.addEventListener('click', () => {
-    const pin = pinInput?.value || '';
-    
-    if (!validatePIN(pin)) {
-      showError('pin', 'pin-error');
-      return;
+    setTimeout(function () {
+      // Come back exactly like the Worker would redirect a real payment.
+      var result = new URLSearchParams({
+        status: outcome,
+        paymentID: 'DEMO' + id,
+        amount: ctx.amount,
+        invoice: ctx.invoice,
+        demo: '1',
+      });
+      if (outcome === 'success') result.set('trxID', 'DEMO' + id.slice(0, 6));
+      if (outcome === 'failure') result.set('message', 'Insufficient balance (simulated)');
+      window.location.replace(window.location.pathname + '?' + result.toString());
+    }, 2400);
+  }
+
+  // -------------------------------------------------------------------------
+  // Step 3
+
+  function readResult() {
+    var result = {
+      status: STATUSES.indexOf(status) === -1 ? 'failure' : status,
+      paymentID: cleanText(params.get('paymentID'), 64),
+      trxID: cleanText(params.get('trxID'), 64),
+      amount: payment.normalizeAmount(params.get('amount')) || ctx.amount,
+      invoice: cleanInvoice(params.get('invoice')) || ctx.invoice,
+      product: ctx.product,
+      message: cleanText(params.get('message'), 200),
+      demo: params.get('demo') === '1',
+    };
+    ctx.amount = result.amount;
+    ctx.invoice = result.invoice;
+    return result;
+  }
+
+  function notifyOpener(result) {
+    if (!window.opener || !ctx.origin) return false;
+    try {
+      window.opener.postMessage(
+        {
+          source: 'bkash-blogger',
+          type: 'result',
+          status: result.status,
+          invoice: result.invoice,
+          amount: result.amount,
+          product: result.product,
+          paymentID: result.paymentID,
+          trxID: result.trxID,
+          message: result.message,
+          demo: result.demo,
+        },
+        ctx.origin
+      );
+      return true;
+    } catch (e) {
+      return false;
     }
-    
-    // Show loading
-    if (loadingOverlay) {
-      loadingOverlay.classList.add('active');
-    }
-    confirmBtn.disabled = true;
-    
-    // Simulate payment processing
-    if (typeof initiateBkashPayment === 'function') {
-      initiateBkashPayment(amount, invoice, merchant)
-        .then(() => {
-          setTimeout(() => {
-            alert('✅ Payment successful!');
-            window.close();
-          }, 1500);
-        })
-        .catch((err) => {
-          if (loadingOverlay) {
-            loadingOverlay.classList.remove('active');
-          }
-          confirmBtn.disabled = false;
-          alert('❌ Payment failed: ' + err.message);
-        });
+  }
+
+  function returnUrlFor(result) {
+    if (!ctx.returnUrl) return '';
+    var url = new URL(ctx.returnUrl);
+    url.searchParams.set('bkash_status', result.status);
+    url.searchParams.set('bkash_invoice', result.invoice);
+    if (result.amount) url.searchParams.set('bkash_amount', result.amount);
+    if (result.trxID) url.searchParams.set('bkash_trx', result.trxID);
+    if (result.paymentID) url.searchParams.set('bkash_payment', result.paymentID);
+    if (result.message) url.searchParams.set('bkash_message', result.message);
+    if (result.demo) url.searchParams.set('bkash_demo', '1');
+    return url.toString();
+  }
+
+  function retry() {
+    var again = new URLSearchParams({ amount: ctx.amount, invoice: ctx.invoice });
+    if (ctx.product) again.set('product', ctx.product);
+    if (ctx.origin) again.set('origin', ctx.origin);
+    if (ctx.returnUrl) again.set('return', ctx.returnUrl);
+    window.location.replace(window.location.pathname + '?' + again.toString());
+  }
+
+  function showResult() {
+    var result = readResult();
+    var notified = notifyOpener(result);
+    var standalone = !window.opener;
+    var backUrl = returnUrlFor(result);
+
+    renderSummary();
+    setStep(3, result.status !== 'success');
+    $('resultIcon').className = 'co-result-icon is-' + result.status;
+    $('trxValue').textContent = result.trxID || '—';
+    $('trxRow').hidden = !result.trxID;
+    $('resultAmount').textContent = ctx.amount ? '৳' + formatAmount(ctx.amount) : '—';
+    $('resultInvoice').textContent = result.invoice;
+    $('resultTime').textContent = new Date().toLocaleString('en-GB', {
+      day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
+    });
+
+    var title;
+    var message;
+    if (result.status === 'success') {
+      title = 'Payment successful';
+      message = notified
+        ? ctx.merchant + ' has been notified. Keep the transaction ID for your records.'
+        : 'Keep the transaction ID for your records.';
+    } else if (result.status === 'cancel') {
+      title = 'Payment cancelled';
+      message = 'You cancelled on bKash. No money was taken.';
     } else {
-      // Demo mode
-      setTimeout(() => {
-        if (loadingOverlay) {
-          loadingOverlay.classList.remove('active');
-        }
-        alert('✅ Payment successful! (Demo Mode)');
-        window.close();
-      }, 2000);
+      title = 'Payment failed';
+      message = (result.message || 'bKash could not complete the payment').replace(/[.!\s]*$/, '. ') +
+        'No money was taken.';
     }
-  });
-}
+    if (result.demo) title += ' (demo)';
+    $('resultTitle').textContent = title;
+    $('resultMessage').textContent = message;
+    document.title = title + ' · ' + ctx.merchant;
 
-// Back button functionality
-document.querySelectorAll('.back-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const backStep = parseInt(btn.dataset.back);
-    if (backStep) {
-      goToStep(backStep);
+    var primary = $('primaryAction');
+    var secondary = $('secondaryAction');
+    var backLabel = 'Back to ' + ctx.merchant;
+
+    if (result.status === 'success') {
+      primary.textContent = standalone && backUrl ? backLabel : 'Done';
+      primary.onclick = function () {
+        leave(backUrl);
+      };
+      secondary.hidden = true;
+    } else {
+      primary.textContent = 'Try again';
+      primary.onclick = retry;
+      secondary.hidden = false;
+      secondary.textContent = standalone && backUrl ? backLabel : 'Close';
+      secondary.onclick = function () {
+        leave(backUrl);
+      };
     }
-  });
-});
 
-// Close button functionality
-document.querySelectorAll('.close-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (confirm('Are you sure you want to cancel the payment?')) {
-      window.close();
+    showView('result');
+    announce(title);
+    exitUrl = backUrl;
+  }
+
+  // -------------------------------------------------------------------------
+  // Leaving
+
+  var exitUrl = '';
+
+  // Close the popup, or go back to the shop when this page was opened in the
+  // same tab (window.close() is ignored for windows a script didn't open).
+  function leave(url) {
+    window.close();
+    setTimeout(function () {
+      if (url) window.location.href = url;
+      else if (window.history.length > 1) window.history.back();
+    }, 150);
+  }
+
+  function cancelCheckout() {
+    var url = returnUrlFor({ status: 'cancel', invoice: ctx.invoice, amount: ctx.amount });
+    if (window.opener && ctx.origin) {
+      notifyOpener({ status: 'cancel', invoice: ctx.invoice, amount: ctx.amount, product: ctx.product, demo: demo });
     }
-  });
-});
+    leave(url);
+  }
 
-// Keyboard shortcuts
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    const closeBtns = document.querySelectorAll('.close-btn');
-    if (closeBtns.length > 0) {
-      closeBtns[0].click();
+  function copyTransactionId() {
+    var text = $('trxValue').textContent;
+    var done = function () {
+      $('copyLabel').textContent = 'Copied';
+      announce('Transaction ID copied');
+      setTimeout(function () {
+        $('copyLabel').textContent = 'Copy';
+      }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () {
+        selectText($('trxValue'));
+      });
+    } else {
+      selectText($('trxValue'));
     }
   }
-  
-  if (e.key === 'Enter') {
-    const activeStep = document.querySelector('.popup-step.active');
-    if (activeStep) {
-      const nextBtn = activeStep.querySelector('.next-btn, .confirm-btn');
-      if (nextBtn && !nextBtn.disabled) {
-        nextBtn.click();
-      }
-    }
-  }
-});
 
-// Initialize
-updateProgress(1);
+  function selectText(el) {
+    var range = document.createRange();
+    range.selectNodeContents(el);
+    var selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
+  // -------------------------------------------------------------------------
+  // Wire up
+
+  $('payBtn').addEventListener('click', startPayment);
+  $('cancelBtn').addEventListener('click', cancelCheckout);
+  $('invalidClose').addEventListener('click', function () {
+    leave(ctx.returnUrl);
+  });
+  $('copyTrx').addEventListener('click', copyTransactionId);
+  $('closeBtn').addEventListener('click', function () {
+    if (!$('view-result').hidden) leave(exitUrl);
+    else if (!$('view-review').hidden) cancelCheckout();
+    else leave(ctx.returnUrl);
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && $('view-processing').hidden) $('closeBtn').click();
+  });
+
+  // Coming back from the bfcache (e.g. the Back button on bKash's page).
+  window.addEventListener('pageshow', function (event) {
+    if (event.persisted && !$('view-processing').hidden) {
+      setStep(1);
+      showView('review');
+    }
+  });
+
+  if (isResult) {
+    showResult();
+  } else if (!ctx.amount) {
+    renderSummary();
+    setStep(1, true);
+    showView('invalid');
+  } else {
+    renderSummary();
+    setStep(1);
+    showView('review');
+  }
+})();

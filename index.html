@@ -3,90 +3,246 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Integrate bKash payment gateway into your Blogger website easily. Open-source solution for accepting payments on Blogspot." />
-  <meta name="keywords" content="bKash, Blogger, Blogspot, Payment Integration, Bangladesh, JavaScript" />
-  <title>bKash Payment Integration for Blogger</title>
+  <meta name="description" content="Add a Pay with bKash button to any Blogger (Blogspot) post. Customers pay on bKash's own secure page; your credentials stay on a free serverless Worker." />
+  <meta name="keywords" content="bKash, Blogger, Blogspot, payment, Bangladesh, bKash payment gateway, tokenized checkout" />
+  <meta name="theme-color" content="#e2136e" />
+  <meta property="og:title" content="bKash for Blogger" />
+  <meta property="og:description" content="Accept bKash payments on your Blogger site with a copy-paste button." />
+  <meta property="og:image" content="Images/bkash-logo-192.png" />
+  <title>bKash for Blogger · Accept bKash payments on Blogspot</title>
+  <link rel="icon" href="Images/bkash-logo-64.png" />
   <link rel="stylesheet" href="styles.css" />
+  <script src="site.js"></script>
 </head>
 <body>
-  <nav class="nav">
-    <div class="nav-logo">
-      <span>💰</span> bKash Blogger
-    </div>
-    <ul class="nav-links">
-      <li><a href="index.html" class="active">Home</a></li>
-      <li><a href="blogger-examples.html">Blogger Examples</a></li>
-      <li><a href="docs.html">Documentation</a></li>
-      <li><a href="setup.html">Setup Guide</a></li>
-      <li><a href="https://github.com/amirulsizan/bkash-blogger-payment" target="_blank" class="github-link">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-        </svg>
-        GitHub
-      </a></li>
-    </ul>
-  </nav>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-  <header class="hero">
-    <h1>Integrate bKash Payments into Blogger</h1>
-    <p>Seamlessly add bKash payment gateway to your Blogspot site with our lightweight, open-source JavaScript solution. No backend required!</p>
-    <a class="btn-primary" href="setup.html">Get Started →</a>
+  <header class="nav" id="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="index.html"><img src="Images/bkash-logo-64.png" alt="" width="30" height="30" /><span>bKash <b>for Blogger</b></span></a>
+      <nav aria-label="Main">
+        <ul class="nav-links" id="navLinks">
+          <li><a href="index.html" aria-current="page">Home</a></li>
+          <li><a href="setup.html">Setup guide</a></li>
+          <li><a href="blogger-examples.html">Examples</a></li>
+          <li><a href="docs.html">Reference</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="i icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="i icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+        <a class="icon-btn nav-github" href="https://github.com/amirulsizan/bkash-blogger-payment" aria-label="GitHub repository">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        </a>
+        <button class="icon-btn menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
   </header>
 
-  <main>
-    <section class="features">
-      <div class="feature-card">
-        <h3>🚀 Easy Integration</h3>
-        <p>Drop in a single JavaScript file and start accepting payments. No complex server setup or backend infrastructure needed.</p>
-      </div>
-      <div class="feature-card">
-        <h3>🔒 Secure Payments</h3>
-        <p>All payments are processed through bKash's official payment gateway. Your customers complete transactions on bKash's secure platform.</p>
-      </div>
-      <div class="feature-card">
-        <h3>📱 Mobile Optimized</h3>
-        <p>Fully responsive design that works seamlessly on all devices. Perfect for Bangladesh's mobile-first internet users.</p>
-      </div>
-      <div class="feature-card">
-        <h3>🎨 Customizable</h3>
-        <p>Easily customize the look and feel to match your brand. Full control over styling and user experience.</p>
-      </div>
-      <div class="feature-card">
-        <h3>⚡ Lightweight</h3>
-        <p>Minimal JavaScript footprint ensures fast page loads. No heavy dependencies or frameworks required.</p>
-      </div>
-      <div class="feature-card">
-        <h3>📖 Open Source</h3>
-        <p>MIT licensed and completely free. Contribute, fork, or customize as per your needs. Community driven development.</p>
+  <main id="main">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <span class="eyebrow"><b>Open source</b> Free, MIT licensed</span>
+          <h1>Accept <em>bKash</em> payments on your Blogger site</h1>
+          <p class="hero-lead">
+            Paste a “Pay with bKash” button into any Blogspot post. Customers pay on bKash's own
+            secure page, and your merchant credentials stay on a free serverless Worker, never in your blog.
+          </p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="setup.html">
+              Start the setup
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <a class="btn btn-secondary" href="blogger-examples.html">Get a button snippet</a>
+          </div>
+          <ul class="hero-points">
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>No server to maintain</li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>Works in any Blogger theme</li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>bKash Tokenized Checkout</li>
+          </ul>
+        </div>
+
+        <div class="browser" aria-label="Live demo on a sample Blogger post">
+          <div class="browser-bar">
+            <div class="browser-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="browser-url"><b>yourblog.blogspot.com</b>/2026/09/freelancing-starter-kit.html</div>
+          </div>
+          <article class="blog-post">
+            <div class="blog-meta">September 24, 2026 · Resources</div>
+            <h3>The Freelancing Starter Kit</h3>
+            <p>Templates, a pricing calculator and 40 cold-email scripts that landed my first ten clients on Upwork.</p>
+            <div class="product">
+              <div class="product-cover" aria-hidden="true">Starter Kit eBook</div>
+              <div class="product-info">
+                <strong>Starter Kit (PDF + templates)</strong>
+                <span class="product-price">৳990</span>
+                <button type="button" data-bkash-amount="990" data-bkash-product="Freelancing Starter Kit">Pay with bKash</button>
+              </div>
+            </div>
+            <p class="demo-hint">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/></svg>
+              Live demo: the button works. No money moves on this site.
+            </p>
+          </article>
+        </div>
       </div>
     </section>
 
-    <section class="demo">
-      <h2>💳 Live Payment Demo</h2>
-      <div class="product-card">
-        <h3>Sample Product</h3>
-        <p id="priceDetails" data-price="990">💵 Price: 990 BDT</p>
-        <button id="bkash-pay" class="bkash-pay-button">Pay with bKash</button>
+    <section class="section section-tight" id="how">
+      <div class="container">
+        <div class="section-head">
+          <span class="kicker">How it works</span>
+          <h2>Your blog shows the button. bKash handles the money.</h2>
+          <p>Blogger can only host static pages, so a tiny Worker talks to the bKash API for you. Nothing sensitive ever touches your blog.</p>
+        </div>
+        <ol class="flow" role="list">
+          <li class="flow-step card">
+            <h3>Customer clicks Pay</h3>
+            <p><code>blogger.js</code> turns any element with <code>data-bkash-amount</code> into a payment button.</p>
+            <span class="where">Your Blogger post</span>
+          </li>
+          <li class="flow-step card">
+            <h3>Checkout popup</h3>
+            <p>Shows the amount, then asks your Worker to create a bKash payment.</p>
+            <span class="where">Your GitHub Pages</span>
+          </li>
+          <li class="flow-step card">
+            <h3>Pays on bKash</h3>
+            <p>Number, OTP and PIN go into bKash's own page. Your site never sees them.</p>
+            <span class="where">bkash.com</span>
+          </li>
+          <li class="flow-step card">
+            <h3>Receipt on your post</h3>
+            <p>The Worker confirms with bKash. Your post gets a success event and the transaction ID.</p>
+            <span class="where">Your Blogger post</span>
+          </li>
+        </ol>
+        <div class="card flow-server">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8.5a4 4 0 0 1-.5 9.5H7z"/><path d="M10 13.5l1.5 1.5 3-3"/></svg>
+          <p><strong>Behind the scenes:</strong> a free Cloudflare Worker keeps your bKash app key, secret, username and password.
+            It is the only part that talks to the bKash API: it creates the payment, executes it, and can re-check any payment on request.</p>
+        </div>
       </div>
-      <script>
-        window.bkashCreds = { merchantNumber: 'YOUR_MERCHANT_ID' };
-        document.getElementById('bkash-pay').addEventListener('click', function () {
-          const amount = document.getElementById('priceDetails').dataset.price;
-          const merchant =
-            (window.bkashCreds && window.bkashCreds.merchantNumber) ||
-            'YOUR_MERCHANT_ID';
-          const invoice = 'INV' + Date.now();
-          const url = `popup.html?amount=${encodeURIComponent(amount)}&merchant=${encodeURIComponent(merchant)}&invoice=${encodeURIComponent(invoice)}`;
-          window.open(url, 'bkashPopup', 'width=380,height=620');
-        });
-      </script>
+    </section>
+
+    <section class="section section-flush">
+      <div class="container">
+        <div class="section-head">
+          <span class="kicker">Why this approach</span>
+          <h2>Built for how Blogger actually works</h2>
+        </div>
+        <div class="grid grid-3">
+          <div class="card feature">
+            <div class="feature-icon"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.4-7 10-4-1.6-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
+            <h3>Safe by design</h3>
+            <p>No PINs or OTPs on your pages, no secrets in your theme. The popup only ever redirects to bKash domains.</p>
+          </div>
+          <div class="card feature">
+            <div class="feature-icon"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg></div>
+            <h3>Copy, paste, publish</h3>
+            <p>Two lines in the post's HTML view, a gadget, or your theme. Buttons keep working when posts load dynamically.</p>
+          </div>
+          <div class="card feature">
+            <div class="feature-icon"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9-9-9z"/><circle cx="8" cy="8" r="1.5"/></svg></div>
+            <h3>Prices you can trust</h3>
+            <p>Anyone can edit HTML in their browser. Set <code>PRICES</code> on the Worker and it refuses any tampered amount.</p>
+          </div>
+          <div class="card feature">
+            <div class="feature-icon"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></div>
+            <h3>Works on phones</h3>
+            <p>If an in-app browser blocks the popup, checkout continues in the same tab and returns to your post.</p>
+          </div>
+          <div class="card feature">
+            <div class="feature-icon"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg></div>
+            <h3>Events you can hook</h3>
+            <p><code>bkash:success</code>, <code>bkash:failure</code> and <code>bkash:cancel</code> let you reveal a download link or redirect.</p>
+          </div>
+          <div class="card feature">
+            <div class="feature-icon"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg></div>
+            <h3>Demo mode built in</h3>
+            <p>Before you have credentials, the full flow runs as a simulation, so you can design your post today.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-flush">
+      <div class="container split">
+        <div>
+          <span class="kicker">The whole integration</span>
+          <h2>Two lines in your post</h2>
+          <p>Load the script from your GitHub Pages fork and mark any button with a price. Style it yourself or keep the built-in bKash look.</p>
+          <ul class="checklist">
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg><div>A Blogger blog<small>Posts, pages, gadgets or the theme</small></div></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg><div>A free GitHub account<small>Hosts the checkout popup on GitHub Pages</small></div></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg><div>A free Cloudflare account<small>Runs the Worker that holds your credentials</small></div></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg><div>bKash merchant credentials<small>Tokenized Checkout: sandbox first, then live</small></div></li>
+          </ul>
+          <a class="btn btn-secondary" href="setup.html">Follow the 15-minute setup</a>
+        </div>
+        <div>
+<pre data-lang="html" data-title="Blogger post · HTML view"><code>&lt;script src="https://yourname.github.io/bkash-blogger-payment/blogger.js"&gt;&lt;/script&gt;
+
+&lt;button data-bkash-amount="500" data-bkash-product="Premium eBook"&gt;
+  Pay with bKash
+&lt;/button&gt;</code></pre>
+<pre data-lang="html" data-title="Optional · do something after payment"><code>&lt;script&gt;
+  document.addEventListener('bkash:success', function (event) {
+    console.log('Paid!', event.detail.trxID);
+  });
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="container">
+      <div class="cta-band">
+        <h2>Ready to take your first payment?</h2>
+        <p>Start in the bKash sandbox with test wallets, then switch one setting to go live.</p>
+        <div class="cta-actions">
+          <a class="btn btn-primary" href="setup.html">Start the setup</a>
+          <a class="btn btn-secondary" href="docs.html">Read the reference</a>
+        </div>
+      </div>
     </section>
   </main>
 
   <footer class="footer">
-    <p id="footerText"></p>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="index.html"><img src="Images/bkash-logo-64.png" alt="" width="30" height="30" /><span>bKash <b>for Blogger</b></span></a>
+          <p>Open-source bKash checkout for Blogger and other static sites. An independent project, not affiliated with bKash Limited.</p>
+        </div>
+        <div>
+          <h4>Guide</h4>
+          <ul>
+            <li><a href="setup.html">Setup guide</a></li>
+            <li><a href="blogger-examples.html">Examples &amp; snippet builder</a></li>
+            <li><a href="docs.html">Reference</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="https://github.com/amirulsizan/bkash-blogger-payment">GitHub repository</a></li>
+            <li><a href="https://github.com/amirulsizan/bkash-blogger-payment/issues">Report an issue</a></li>
+            <li><a href="https://developer.bka.sh/">bKash developer portal</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p id="footerText">© bKash Blogger Payment</p>
+        <p>MIT licensed</p>
+      </div>
+    </div>
   </footer>
-  <script src="footer.js"></script>
+
+  <script src="blogger.js"></script>
 </body>
 </html>
-

@@ -3,205 +3,159 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>bKash Payment</title>
+  <meta name="robots" content="noindex" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <!-- connect-src allows your Worker (https) and `wrangler dev` on localhost. -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https: http://localhost:* http://127.0.0.1:*; base-uri 'none'; form-action 'none'; object-src 'none'" />
+  <meta name="theme-color" content="#e2136e" />
+  <title>Checkout · bKash</title>
+  <link rel="icon" href="Images/bkash-logo-64.png" />
   <link rel="stylesheet" href="popup.css" />
 </head>
 <body>
-  <div class="bkash-popup">
-    <!-- Header -->
-    <div class="popup-header">
-      <div class="logo-container">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="currentColor" class="logo-icon">
-          <path d="M16 0C7.163 0 0 7.163 0 16s7.163 16 16 16 16-7.163 16-16S24.837 0 16 0zm0 29C8.82 29 3 23.18 3 16S8.82 3 16 3s13 5.82 13 13-5.82 13-13 13z"/>
-          <path d="M16 8c-4.418 0-8 3.582-8 8s3.582 8 8 8 8-3.582 8-8-3.582-8-8-8zm0 14c-3.309 0-6-2.691-6-6s2.691-6 6-6 6 2.691 6 6-2.691 6-6 6z"/>
-        </svg>
-        <span class="logo-text">bKash</span>
-      </div>
-      <span class="header-subtitle">Secure Payment</span>
-    </div>
-
-    <!-- Progress Indicator -->
-    <div class="progress-container">
-      <div class="progress-step active" data-step="1">
-        <div class="progress-circle">1</div>
-        <span class="progress-label">Account</span>
-      </div>
-      <div class="progress-line"></div>
-      <div class="progress-step" data-step="2">
-        <div class="progress-circle">2</div>
-        <span class="progress-label">Verify</span>
-      </div>
-      <div class="progress-line"></div>
-      <div class="progress-step" data-step="3">
-        <div class="progress-circle">3</div>
-        <span class="progress-label">Confirm</span>
-      </div>
-    </div>
-
-    <!-- Payment Details Card -->
-    <div class="popup-details">
-      <div class="detail-row">
-        <span class="detail-label">Merchant</span>
-        <span class="detail-value" id="merchantName">Loading...</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Invoice</span>
-        <span class="detail-value" id="invoiceNo">...</span>
-      </div>
-      <div class="detail-row amount-row">
-        <span class="detail-label">Amount</span>
-        <span class="detail-value amount-value">
-          <span class="currency">৳</span>
-          <span id="amount">0</span>
-        </span>
-      </div>
-    </div>
-
-    <!-- Step 1: Enter bKash number -->
-    <div class="popup-step step-1 active">
-      <div class="step-content">
-        <h3 class="step-title">Enter Your bKash Number</h3>
-        <div class="form-group">
-          <label for="bkash-number" class="form-label">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="label-icon">
-              <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328z"/>
-            </svg>
-            bKash Account Number
-          </label>
-          <input 
-            id="bkash-number" 
-            type="tel" 
-            placeholder="01XXXXXXXXX" 
-            maxlength="11"
-            pattern="01[0-9]{9}"
-            class="form-input"
-            required
-          />
-          <span class="form-error" id="number-error">Please enter a valid bKash number</span>
+  <main class="checkout" id="checkout" aria-labelledby="amountValue">
+    <!-- Summary -->
+    <header class="co-header">
+      <div class="co-topbar">
+        <div class="co-merchant">
+          <span class="co-avatar" id="merchantInitial" aria-hidden="true">D</span>
+          <div class="co-merchant-text">
+            <span class="co-eyebrow">Paying</span>
+            <span class="co-merchant-name" id="merchantName">Demo Store</span>
+          </div>
         </div>
-        <div class="terms-container">
-          <label class="checkbox-label">
-            <input type="checkbox" id="agree" class="checkbox-input" />
-            <span class="checkbox-custom"></span>
-            <span class="checkbox-text">
-              I agree to the <a href="#" class="terms-link">terms and conditions</a>
-            </span>
-          </label>
+        <span class="co-badge" id="demoBadge" hidden>Demo</span>
+        <button type="button" class="co-icon-btn" id="closeBtn" aria-label="Close checkout">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <p class="co-amount">
+        <span class="co-currency">৳</span><span id="amountValue">0.00</span>
+      </p>
+      <p class="co-product" id="productName" hidden></p>
+    </header>
+
+    <div class="co-body">
+      <ol class="co-steps" id="steps" aria-label="Payment progress">
+        <li class="co-step" data-step="1"><span class="co-step-dot">1</span><span class="co-step-label">Review</span></li>
+        <li class="co-step" data-step="2"><span class="co-step-dot">2</span><span class="co-step-label">Pay on bKash</span></li>
+        <li class="co-step" data-step="3"><span class="co-step-dot">3</span><span class="co-step-label">Done</span></li>
+      </ol>
+
+      <!-- Step 1: review -->
+      <section class="co-view" id="view-review" hidden>
+        <h1 class="co-sr-only" tabindex="-1">Review your payment</h1>
+        <dl class="co-details">
+          <div class="co-row">
+            <dt>Invoice</dt>
+            <dd class="co-mono" id="invoiceValue">—</dd>
+          </div>
+          <div class="co-row">
+            <dt>Pay with</dt>
+            <dd class="co-method"><img src="Images/bkash-logo-64.png" alt="" width="20" height="20" /> bKash</dd>
+          </div>
+        </dl>
+
+        <div class="co-note">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.4-7 10-4-1.6-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+          <p>
+            Next, enter your number, OTP and PIN on <strong>bKash's secure page</strong>.
+            <span id="merchantNote">The merchant</span> never sees your PIN.
+          </p>
         </div>
-      </div>
-      <div class="popup-actions">
-        <button class="btn btn-primary next-btn" data-next="2">
-          <span class="btn-text">Proceed</span>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="btn-icon">
-            <path d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
-          </svg>
-        </button>
-        <button class="btn btn-secondary close-btn">Cancel</button>
-      </div>
-    </div>
 
-    <!-- Step 2: Verification code -->
-    <div class="popup-step step-2">
-      <div class="step-content">
-        <h3 class="step-title">Enter Verification Code</h3>
-        <p class="step-description">A verification code has been sent to your bKash account</p>
-        <div class="form-group">
-          <label for="verification-code" class="form-label">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="label-icon">
-              <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
-            </svg>
-            Verification Code
-          </label>
-          <input 
-            id="verification-code" 
-            type="text" 
-            placeholder="Enter 6-digit code" 
-            maxlength="6"
-            pattern="[0-9]{6}"
-            class="form-input code-input"
-            required
-          />
-          <span class="form-error" id="code-error">Please enter a valid 6-digit code</span>
+        <div class="co-alert" id="reviewError" role="alert" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/></svg>
+          <span id="reviewErrorText"></span>
         </div>
-        <button class="resend-btn" id="resend-code">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
-            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
-          </svg>
-          Resend Code
-        </button>
-      </div>
-      <div class="popup-actions">
-        <button class="btn btn-primary next-btn" data-next="3">
-          <span class="btn-text">Verify</span>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="btn-icon">
-            <path d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
-          </svg>
-        </button>
-        <button class="btn btn-secondary back-btn" data-back="1">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="btn-icon">
-            <path d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-          </svg>
-          <span class="btn-text">Back</span>
-        </button>
-      </div>
-    </div>
 
-    <!-- Step 3: Confirm with PIN -->
-    <div class="popup-step step-3">
-      <div class="step-content">
-        <h3 class="step-title">Enter Your PIN</h3>
-        <p class="step-description">Enter your bKash account PIN to complete the payment</p>
-        <div class="form-group">
-          <label for="pin" class="form-label">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="label-icon">
-              <path d="M3.5 11.5a3.5 3.5 0 1 1 3.163-5H14L15.5 8 14 9.5l-1-1-1 1-1-1-1 1-1-1-1 1H6.663a3.5 3.5 0 0 1-3.163 2zM2.5 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
-            </svg>
-            PIN Number
-          </label>
-          <input 
-            id="pin" 
-            type="password" 
-            placeholder="Enter 4-digit PIN" 
-            maxlength="4"
-            pattern="[0-9]{4}"
-            class="form-input pin-input"
-            required
-          />
-          <span class="form-error" id="pin-error">Please enter a valid 4-digit PIN</span>
+        <fieldset class="co-sim" id="demoSimulator" hidden>
+          <legend>Demo · simulate bKash's answer</legend>
+          <div class="co-segmented">
+            <label><input type="radio" name="outcome" value="success" checked /><span>Success</span></label>
+            <label><input type="radio" name="outcome" value="failure" /><span>Failure</span></label>
+            <label><input type="radio" name="outcome" value="cancel" /><span>Cancel</span></label>
+          </div>
+        </fieldset>
+
+        <button type="button" class="co-btn co-btn-pay" id="payBtn">
+          <img src="Images/bkash-logo-64.png" alt="" width="28" height="28" />
+          <span id="payLabel">Pay with bKash</span>
+        </button>
+        <button type="button" class="co-btn co-btn-ghost" id="cancelBtn">Cancel</button>
+      </section>
+
+      <!-- Step 2: handing over to bKash -->
+      <section class="co-view co-center" id="view-processing" hidden>
+        <div class="co-loader" aria-hidden="true">
+          <img src="Images/bkash-logo-64.png" alt="" width="44" height="44" />
         </div>
-      </div>
-      <div class="popup-actions">
-        <button class="btn btn-success confirm-btn" id="confirm-payment">
-          <span class="btn-text">Confirm Payment</span>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="btn-icon">
-            <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
-          </svg>
-        </button>
-        <button class="btn btn-secondary back-btn" data-back="2">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="btn-icon">
-            <path d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-          </svg>
-          <span class="btn-text">Back</span>
-        </button>
-      </div>
+        <h1 class="co-title" id="processingTitle" tabindex="-1">Connecting to bKash…</h1>
+        <p class="co-muted" id="processingText">Please keep this window open.</p>
+      </section>
+
+      <!-- Step 3: result -->
+      <section class="co-view co-center" id="view-result" hidden>
+        <div class="co-result-icon" id="resultIcon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="icon-success"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+          <svg viewBox="0 0 24 24" class="icon-failure"><path d="M7 7l10 10M17 7L7 17"/></svg>
+          <svg viewBox="0 0 24 24" class="icon-cancel"><path d="M6 12h12"/></svg>
+        </div>
+        <h1 class="co-title" id="resultTitle" tabindex="-1">Payment successful</h1>
+        <p class="co-muted" id="resultMessage"></p>
+
+        <dl class="co-details co-receipt" id="resultDetails">
+          <div class="co-row" id="trxRow">
+            <dt>Transaction ID</dt>
+            <dd class="co-trx">
+              <span class="co-mono" id="trxValue">—</span>
+              <button type="button" class="co-copy" id="copyTrx" aria-label="Copy transaction ID">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+                <span id="copyLabel">Copy</span>
+              </button>
+            </dd>
+          </div>
+          <div class="co-row">
+            <dt>Amount</dt>
+            <dd id="resultAmount">—</dd>
+          </div>
+          <div class="co-row">
+            <dt>Invoice</dt>
+            <dd class="co-mono" id="resultInvoice">—</dd>
+          </div>
+          <div class="co-row">
+            <dt>Time</dt>
+            <dd id="resultTime">—</dd>
+          </div>
+        </dl>
+
+        <button type="button" class="co-btn co-btn-primary" id="primaryAction">Done</button>
+        <button type="button" class="co-btn co-btn-ghost" id="secondaryAction" hidden>Close</button>
+      </section>
+
+      <!-- Broken link -->
+      <section class="co-view co-center" id="view-invalid" hidden>
+        <div class="co-result-icon is-warning" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 7.5v5.5M12 16.5v.01"/></svg>
+        </div>
+        <h1 class="co-title" tabindex="-1">This payment link is incomplete</h1>
+        <p class="co-muted">The amount is missing or invalid. Go back to the shop and press the payment button again.</p>
+        <button type="button" class="co-btn co-btn-primary" id="invalidClose">Close</button>
+      </section>
     </div>
 
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loading-overlay">
-      <div class="spinner"></div>
-      <p class="loading-text">Processing payment...</p>
-    </div>
+    <footer class="co-footer">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      <span>Payments processed by bKash</span>
+      <span class="co-dot" aria-hidden="true">·</span>
+      <span>Helpline 16247</span>
+    </footer>
+  </main>
 
-    <!-- Footer -->
-    <div class="popup-footer">
-      <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" class="footer-icon">
-        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
-      </svg>
-      Secured by bKash • Call 16247
-    </div>
-  </div>
+  <div class="co-sr-only" id="liveRegion" aria-live="polite"></div>
 
+  <script src="config.js"></script>
   <script src="bkash-payment.js"></script>
   <script src="popup.js"></script>
 </body>
