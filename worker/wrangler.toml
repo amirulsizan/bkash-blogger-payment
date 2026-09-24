@@ -1,0 +1,22 @@
+# Cloudflare Worker that keeps your bKash credentials off your Blogger page.
+# Deploy:   npx wrangler deploy
+# Secrets:  npx wrangler secret put BKASH_USERNAME   (repeat for PASSWORD, APP_KEY, APP_SECRET)
+name = "bkash-blogger"
+main = "src/index.js"
+compatibility_date = "2024-09-23"
+
+[vars]
+# "sandbox" while testing, "live" once bKash has approved your merchant account.
+BKASH_MODE = "sandbox"
+
+# Where customers land after paying: the popup.html on your GitHub Pages fork.
+POPUP_URL = "https://yourusername.github.io/bkash-blogger-payment/popup.html"
+
+# Sites allowed to call this Worker from the browser. Defaults to the POPUP_URL origin.
+# ALLOWED_ORIGINS = "https://yourusername.github.io,https://yourblog.blogspot.com"
+
+# Optional: enforce prices on the server. Product names must match data-bkash-product.
+# PRICES = '{"Premium eBook": 500, "Donation": "any"}'
+
+# Optional: reject payments above this amount (BDT).
+# MAX_AMOUNT = "25000"

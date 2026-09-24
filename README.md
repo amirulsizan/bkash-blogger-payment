@@ -1,188 +1,107 @@
-# bKash Payment Integration for Blogger
+# bKash for Blogger
 
-This project demonstrates how to integrate bKash payment method into a Blogger Blogspot payment page using JavaScript.
+Add a **Pay with bKash** button to any Blogger (Blogspot) post. Customers pay on
+bKash's own secure page, and your merchant credentials stay on a free serverless
+Worker, never in your blog.
 
-## ✅ Confirmed: Works 100% with Blogger!
-
-**YES, this integration is FULLY compatible with Blogger/Blogspot!** This is a pure client-side JavaScript solution that requires no backend server, making it perfect for static platforms like Blogger.
-
-### Why It Works on Blogger:
-- ✅ **No Backend Required**: 100% client-side JavaScript
-- ✅ **Popup-Based**: Opens payment in a separate window
-- ✅ **Secure**: All payments processed through official bKash gateway
-- ✅ **Easy Integration**: Just copy and paste code into your Blogger posts
-- ✅ **Mobile Friendly**: Works perfectly on all devices
-
-## 🚀 Quick Start for Blogger
-
-### Method 1: Direct Copy-Paste (Easiest)
-
-1. **Visit the Examples Page**: Open `blogger-examples.html` in your browser
-2. **Choose a Template**: Pick from single product, multiple products, or custom amount
-3. **Copy the Code**: Click the "Copy" button
-4. **Paste in Blogger**: 
-   - Go to your Blogger post
-   - Switch to HTML view
-   - Paste the code
-5. **Update Credentials**: Replace `YOUR_MERCHANT_NUMBER` and GitHub Pages URL
-6. **Publish**: That's it! You're ready to accept payments
-
-### Method 2: Theme Integration (For Multiple Posts)
-
-Add the scripts to your Blogger theme for site-wide availability:
-
-1. Go to **Theme → Edit HTML**
-2. Find `</head>` tag
-3. Add before `</head>`:
+- **Docs site:** open `index.html` (or your GitHub Pages URL). It includes a live
+  demo, a [setup guide](setup.html), a [snippet builder](blogger-examples.html)
+  and a [reference](docs.html).
+- **Markdown guide:** [BLOGGER_INTEGRATION.md](BLOGGER_INTEGRATION.md)
 
 ```html
-<script src="https://yourusername.github.io/bkash-blogger-payment/bkash-payment.js"></script>
-<script src="https://yourusername.github.io/bkash-blogger-payment/blogger.js"></script>
+<script src="https://YOUR-GITHUB-NAME.github.io/bkash-blogger-payment/blogger.js"></script>
+<button data-bkash-amount="500" data-bkash-product="Premium eBook">Pay with bKash</button>
 ```
 
-4. Then in any post, just add:
-```html
-<input id="amount" type="number" value="100" />
-<button id="payBtn">Pay with bKash</button>
-<script>bkashBlogger.initButton('payBtn', 'amount');</script>
+## How it works
+
+Blogger can only host static pages, and bKash's API needs secret credentials, so
+the work is split three ways:
+
+```
+ Blogger post              Checkout popup             bKash                 Worker (Cloudflare)
+ ────────────              ──────────────             ─────                 ───────────────────
+ blogger.js  ──opens──▶    popup.html  ──POST /create──────────────────────▶ grant token + create
+                                       ◀───────────── bkashURL ────────────
+                           redirect ─────────────────▶ number, OTP, PIN
+                                                       ──▶ /callback ──────▶ execute payment
+                           result page ◀──────────────────────── redirect ──
+ bkash:success ◀─postMessage─
 ```
 
-## 📁 Project Structure
+1. `blogger.js` turns any element with `data-bkash-amount` into a button that
+   opens the checkout popup.
+2. The popup (hosted on your GitHub Pages fork) asks your Worker to create a
+   payment and sends the customer to bKash.
+3. The customer enters their number, OTP and PIN **on bKash's page**.
+4. bKash calls the Worker back. The Worker executes the payment and returns the
+   customer to the popup, which tells your post the result.
+
+No credentials are needed to try it: with no Worker configured, the checkout
+runs in **demo mode**, so the whole flow works and no money moves.
+
+## Quick start
+
+1. **Fork** this repo and enable **GitHub Pages** (Settings → Pages → Deploy
+   from branch `main`, folder `/`).
+2. **Get bKash Tokenized Checkout credentials** (sandbox first): username,
+   password, app key and app secret.
+3. **Deploy the Worker** in [`worker/`](worker/) on Cloudflare (dashboard
+   copy-paste or `npx wrangler deploy`) and add the four credentials as secrets,
+   plus `POPUP_URL`.
+4. **Point the checkout at it:** set `apiBase` and `merchantName` in
+   [`config.js`](config.js).
+5. **Paste the snippet** into a post's HTML view, a gadget or your theme.
+
+The [setup guide](setup.html) walks through every screen.
+
+## Project structure
 
 ```
 bkash-blogger-payment/
-├── 🎨 Frontend Files
-│   ├── index.html              # Homepage with live demo
-│   ├── blogger-examples.html   # Ready-to-use code snippets ⭐
-│   ├── docs.html               # API documentation
-│   ├── setup.html              # Step-by-step setup guide
-│   └── styles.css              # Main stylesheet
-│
-├── 💳 Payment Integration
-│   ├── bkash-payment.js        # Core payment logic
-│   ├── blogger.js              # Blogger helper functions
-│   ├── popup.html              # Payment popup UI
-│   ├── popup.css               # Popup styling
-│   └── popup.js                # Popup interactions
-│
-├── 📚 Documentation
-│   ├── README.md               # This file
-│   ├── BLOGGER_INTEGRATION.md  # Complete Blogger guide ⭐
-│   └── LICENSE                 # MIT License
-│
-├── ⚙️  Configuration
-│   ├── package.json            # NPM configuration
-│   └── .gitignore              # Git ignore rules
-│
-├── 🖼️  Assets
-│   └── images/                 # Logo and graphics
-│
-└── 🧪 Tests
-    └── tests/                  # Automated tests
+├── blogger.js              Script for your blog: buttons, popup, events
+├── popup.html/.css/.js     Checkout popup: review → bKash → result
+├── config.js               Your Worker URL and shop name (edit in your fork)
+├── bkash-payment.js        Browser client for the Worker, used by the popup
+├── worker/
+│   ├── src/index.js        Cloudflare Worker: bKash Tokenized Checkout API
+│   └── wrangler.toml       Worker settings
+├── index.html              Docs site: home and live demo
+├── setup.html              Docs site: setup guide
+├── blogger-examples.html   Docs site: snippet builder and examples
+├── docs.html               Docs site: reference
+├── styles.css, site.js, examples.js   Docs site styling and behaviour
+├── Images/                 bKash logo (SVG source and small PNGs)
+├── tests/                  Node tests for the client and the Worker
+└── BLOGGER_INTEGRATION.md  The full guide in Markdown
 ```
 
-## 📖 Complete Documentation
+## Security
 
-- **[Blogger Examples](blogger-examples.html)** - Ready-to-use code snippets
-- **[Integration Guide](BLOGGER_INTEGRATION.md)** - Complete Blogger integration guide
-- **[Setup Guide](setup.html)** - Step-by-step setup instructions
-- **[API Documentation](docs.html)** - Technical API reference
+- The checkout never collects PINs or OTPs; bKash's page does.
+- bKash credentials live only in the Worker's secrets. Nothing in this repo or
+  on Blogger is secret, so **never put credentials in `config.js` or a post.**
+- The popup only redirects to `https://` bKash domains and only reports results
+  to the blog that opened it.
+- Set `PRICES` on the Worker so nobody can pay less by editing your page.
+- Events on your blog run in the visitor's browser. Confirm the transaction ID
+  in your merchant portal or with the Worker's `/verify` endpoint before
+  delivering anything valuable.
 
-## Table of Contents
-
-- [Introduction](#introduction)
-- [Prerequisites](#prerequisites)
-- [Setup](#setup)
-- [Usage](#usage)
-- [Running Tests](#running-tests)
-- [Contributing](#contributing)
-- [License](#license)
-
-## Introduction
-
-This repository provides a simple guide and code snippets to integrate bKash payment method into a Blogger Blogspot page for accepting payments from users. The integration involves client-side JavaScript for calculating and initiating payments using bKash API.
-
-## Prerequisites
-
-Before you begin, make sure you have the following:
-
-- **bKash Merchant Account**: Sign up at [bKash Developer Portal](https://developer.bka.sh/)
-- **Blogger Website**: Any Blogspot blog with access to post/theme editor
-- **GitHub Account** (Optional but recommended for hosting files)
-
-### Getting bKash Credentials
-
-1. Visit [bKash Developers Portal](https://developer.bka.sh/)
-2. Create or log in to your account
-3. Obtain from dashboard:
-   - Merchant Number
-   - App Key
-   - App Secret
-   - Username
-   - Password
-
-**For Testing**: Use sandbox credentials provided by bKash for development and testing.
-
-## Setup
-
-1. **Obtain bKash API Credentials**:
-   - Go to [bKash Developers Portal](https://developer.bka.sh/) and create or log in to your account.
-   - Obtain your Merchant ID, Username, and Password from the dashboard.
-
-2. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/yourusername/bkash-payment-integration.git
-   cd bkash-blogger-payment
-   npm install
-
-   ```
-
-3. **Configure the Payment Page:**
-   Edit your Blogger page HTML to include the payment form and JavaScript code provided in this repository.
-
-## Usage
-
-1. **Customize Payment Form:**
-   Modify the provided HTML and JavaScript files to fit your specific product pricing and layout requirements.
-2. **Integrate with bKash API:**
-   Use the provided JavaScript snippets to calculate the payment amount and initiate a payment request to bKash API.
-
-## Testing and Deployment
-
-Test the integration thoroughly in a development environment. Deploy the changes to your Blogger site after successful testing.
-
-## Running Tests
-
-To run the automated tests for this project:
+## Development
 
 ```bash
-npm test
+npm test        # client and Worker tests (Node 18+, no dependencies)
+npm run dev     # serve the docs site and popup on http://localhost:3000
+cd worker && npx wrangler dev   # run the Worker locally
 ```
-
-This uses Node's built-in test runner and requires no additional setup.
-
-   Modify the provided HTML and JavaScript files to fit your specific product pricing and layout requirements.
-
-2. **Trigger the payment:**
-
-   Include `bkash-payment.js` and call `payWithBkash` from a button click. Replace the placeholder credentials in `bkash-payment.js` with your own sandbox or production credentials.
-
-   ```html
-   <button onclick="payWithBkash('100', 'INV123')">Pay with bKash</button>
-   ```
-
-   The script requests a sandbox token and redirects customers to bKash for approval.
-
-## Testing and Deployment
-
-Test the integration thoroughly in a development environment. Deploy the changes to your Blogger site after successful testing.
 
 ## Contributing
 
-Contributions are welcome! If you have suggestions, improvements, or bug fixes, please fork the repository and submit a pull request.
+Issues and pull requests are welcome. Please run `npm test` before submitting.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-This project is licensed under the MIT License - see the LICENSE.txt file for details.
+MIT. See [LICENSE](LICENSE). This is an independent project and is not
+affiliated with bKash Limited.
